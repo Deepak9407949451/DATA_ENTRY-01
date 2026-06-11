@@ -194,7 +194,7 @@ tr:hover { background-color: #f9f9f9; }
   <select id="insuranceCompany">
  <option value="">-- Choose Name --</option>
 
-                    <option>ICICI LOMBARD GENERAL INSURANCE CO. LTD</option><option>IFFCO TOKIO GENERAL INSURANCE CO. LTD</option><option>FUTURE GENERALI INDIA INSURANCE CO. LTD</option><option> BAJAJ ALLIANZ GENERAL INSURANCE CO. LTD</option><option>CARE HEALTH INSURANCE LTD</option><option>CSEB-CSPC-CSP-DCL-VIDAL HEALTH TPA</option><option>CSEB-CSPC-CSP-GCL-VIDAL HEALTH TPA</option><option>CSEB-CSPC-CSP-TCL-VIDAL HEALTH TPA</option><option>HDFC ERGO GENERAL INSURANCE CO.LTD</option><option>NATIONAL INSURANCE CO. LTD</option><option>NIVA BUPA HEALTH INSURANCE CO LTD</option><option>THE ORIENTAL INSURANCE COMPANY LIMITED</option><option>THE NEW INDIA ASSURANCE CO. LTD</option><option>STAR HEALTH AND ALLIED INSURANCE CO.LTD</option><option>UNITED INDIA INSURANCE CO LTD</option><option>SBI GENERAL INSURANCE CO. LTD</option><option>TATA AIG GENERAL INSURANCE CO. LTD</option><option>RELIANCE GERENAL INSURANCE</option><option>GENERALI CENTRAL INSURANCE CO.LTD</option><option>ADITYA BIRLA HEALTH INSURANCE</option><option>MANIPAL CIGNA HEALTH INSURANCE COMPANY LIMITED</option><option>GO DIGIT GENERAL INSURANCE COMPANY LIMITED</option><option>MAGMA GENERAL INSURANCE COMPANY LIMITED</option><option>ZURICH KOTAK GENERAL INSURANCE COMPANY (INDIA) LIMITED</option><option>ZUNO GENERAL INSURANCE COMPANY LTD</option><option>MAGMA HDI GENERAL INSURANCE CO LTD</option><option>ROYAL SUNDARAM GENERAL INSURANCE COMPANY LTD</option><option>CHOLAMANDALAM MS GENERAL INSURANCE CO. LTD.</option><option>MADHYA PRADESH POWER GENERATING COMPANY LIMITED</option><option>INDUSIND GENERAL INSURANCE</option>
+                    <option>ICICI LOMBARD GENERAL INSURANCE CO. LTD</option><option>IFFCO TOKIO GENERAL INSURANCE CO. LTD</option><option>FUTURE GENERALI INDIA INSURANCE CO. LTD</option><option> ALLIANZ GENERAL INSURANCE CO. LTD</option><option>CARE HEALTH INSURANCE LTD</option><option>CSEB-CSPC-CSP-DCL-VIDAL HEALTH TPA</option><option>CSEB-CSPC-CSP-GCL-VIDAL HEALTH TPA</option><option>CSEB-CSPC-CSP-TCL-VIDAL HEALTH TPA</option><option>HDFC ERGO GENERAL INSURANCE CO.LTD</option><option>NATIONAL INSURANCE CO. LTD</option><option>NIVA BUPA HEALTH INSURANCE CO LTD</option><option>THE ORIENTAL INSURANCE COMPANY LIMITED</option><option>THE NEW INDIA ASSURANCE CO. LTD</option><option>STAR HEALTH AND ALLIED INSURANCE CO.LTD</option><option>UNITED INDIA INSURANCE CO LTD</option><option>SBI GENERAL INSURANCE CO. LTD</option><option>TATA AIG GENERAL INSURANCE CO. LTD</option><option>RELIANCE GERENAL INSURANCE</option><option>GENERALI CENTRAL INSURANCE CO.LTD</option><option>ADITYA BIRLA HEALTH INSURANCE</option><option>MANIPAL CIGNA HEALTH INSURANCE COMPANY LIMITED</option><option>GO DIGIT GENERAL INSURANCE COMPANY LIMITED</option><option>MAGMA GENERAL INSURANCE COMPANY LIMITED</option><option>ZURICH KOTAK GENERAL INSURANCE COMPANY (INDIA) LIMITED</option><option>ZUNO GENERAL INSURANCE COMPANY LTD</option><option>MAGMA HDI GENERAL INSURANCE CO LTD</option><option>ROYAL SUNDARAM GENERAL INSURANCE COMPANY LTD</option><option>CHOLAMANDALAM MS GENERAL INSURANCE CO. LTD.</option><option>MADHYA PRADESH POWER GENERATING COMPANY LIMITED</option><option>INDUSIND GENERAL INSURANCE</option>
                 </optgroup>
 </select>
 </div>
@@ -360,8 +360,6 @@ tr:hover { background-color: #f9f9f9; }
     <button onclick="deleteSelected()" style="background:#dc3545; width: auto; padding-left:20px; padding-right:20px;">Delete Selected</button>
     <button onclick="sendWhatsAppForSelectedDischargeApproved()" style="background:#25D366; width: auto; padding-left:20px; padding-right:20px;">Send WhatsApp Message</button>
     <button id="syncBtn" onclick="syncToGoogleSheet()" style="background:#4285F4; width: auto; padding-left:20px; padding-right:20px;">Sync to Google Sheets</button>
-    <button id="loadGoogleBtn" onclick="loadFromGoogleSheet()" style="background:#0F9D58; width: auto; padding-left:20px; padding-right:20px;">Load from Google</button>
-    <span id="syncStatusDisplay" style="align-self:center; padding:8px 12px; border-radius:8px; background:#f0f0f0; color:#333; font-size:13px; font-weight:bold; border:1px solid #ccc;">Sync status: idle</span>
 </div>
 
 <div style="overflow-x: auto;">
@@ -422,19 +420,6 @@ let nextPatientId = Number(localStorage.getItem("nextPatientId")) || 1;
 let selectedPatientIds = new Set();
 
 const fieldIds = ["name", "uhid", "mobile", "insuranceLimit", "ipdNo", "diagnosis", "tpa", "insuranceCompany", "doa", "dod", "insuranceId", "claimNo", "policyNo", "empId", "billInvoiceNo", "totalBill", "finalApproved", "discount", "deduction", "patientPay", "settlementAmount", "tdsAmount", "paymentDate", "utr", "contact", "relation", "insuranceAddress", "bankName", "bankAccountNo", "ifscCode", "bankAddress", "courierDetails", "courierDate", "surgeryName", "remark", "status", "paymentStatus"];
-
-function normalizeValue(value) {
-    return String(value || '').trim().toLowerCase();
-}
-
-function patientHash(patient) {
-    return fieldIds.map(key => normalizeValue(patient[key])).join('||');
-}
-
-function isDuplicatePatient(newPatient) {
-    const hash = patientHash(newPatient);
-    return patients.some(p => patientHash(p) === hash);
-}
 
 const makeEntries = (keys, details) => keys.reduce((acc, key) => (acc[key] = details, acc), {});
 const tpaBankDetails = {
@@ -1418,123 +1403,14 @@ function importData(event) {
 //  SYNC IN GOOGLE SHEET DEPLOY
 
 
-const GOOGLE_SHEET_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwRXnF2qJJNtSzdB_uF-tbG517o_sZbcJ5H-xuWFy8-Dp8HMW2g9f4caGZCO8D6sxvO/exec";
-
-function setSyncStatus(message, type = 'info') {
-    const statusEl = document.getElementById('syncStatusDisplay');
-    if (!statusEl) return;
-    statusEl.textContent = `Sync status: ${message}`;
-    statusEl.style.background = type === 'error' ? '#f8d7da' : type === 'success' ? '#d4edda' : '#f0f0f0';
-    statusEl.style.color = type === 'error' ? '#721c24' : type === 'success' ? '#155724' : '#333';
-    statusEl.style.borderColor = type === 'error' ? '#f5c6cb' : type === 'success' ? '#c3e6cb' : '#ccc';
-}
-
-function buildPatientFromGoogleRow(row) {
-    const normalized = {};
-    Object.keys(row || {}).forEach(key => {
-        normalized[String(key).trim().toLowerCase()] = row[key];
-    });
-    return {
-        name: normalized['patientname'] || normalized['patient name'] || normalized['name'] || '',
-        uhid: normalized['uhid'] || normalized['unique health id'] || '',
-        mobile: normalized['mobile'] || normalized['mobile number'] || normalized['phone'] || '',
-        insuranceLimit: normalized['insurancelimit'] || normalized['insurance limit'] || '',
-        ipdNo: normalized['ipdno'] || normalized['ipd no'] || normalized['ipd'] || '',
-        diagnosis: normalized['diagnosis'] || '',
-        tpa: normalized['tpainsname'] || normalized['tpa/ins.name'] || normalized['tpa'] || '',
-        insuranceCompany: normalized['insurancecompany'] || normalized['settlementsummary'] || normalized['insurance company'] || '',
-        doa: normalized['doa'] || '',
-        dod: normalized['dod'] || '',
-        insuranceId: normalized['insuranceidno'] || normalized['insurance id no'] || normalized['insurance id'] || '',
-        claimNo: normalized['claimno'] || normalized['claim no'] || '',
-        policyNo: normalized['policyno'] || normalized['policy no'] || normalized['policy'] || '',
-        empId: normalized['empidno'] || normalized['emp id no'] || normalized['emp id'] || '',
-        billInvoiceNo: normalized['billinvoiceno'] || normalized['bill invoice no'] || normalized['bill invoice'] || '',
-        totalBill: normalized['totalbill'] || normalized['total bill'] || '',
-        finalApproved: normalized['approved'] || normalized['finalapproved'] || normalized['final approved'] || '',
-        discount: normalized['discount'] || '',
-        deduction: normalized['deduction'] || '',
-        patientPay: normalized['patientpay'] || normalized['patient pay'] || '',
-        settlementAmount: normalized['settlementamount'] || normalized['settlement amount'] || '',
-        tdsAmount: normalized['tdsamount'] || normalized['tds amount'] || '',
-        paymentDate: normalized['paymentdate'] || normalized['payment date'] || '',
-        utr: normalized['paymentutr'] || normalized['paymentutr'] || normalized['utr'] || '',
-        contact: normalized['attendername'] || normalized['contact'] || '',
-        relation: normalized['relation'] || '',
-        insuranceAddress: normalized['insuranceaddress'] || normalized['provider address'] || '',
-        bankName: normalized['bankname'] || normalized['bank name'] || '',
-        bankAccountNo: normalized['bankaccountno'] || normalized['bank account no'] || normalized['account no'] || '',
-        ifscCode: normalized['ifsccode'] || normalized['ifsc code'] || normalized['ifsc'] || '',
-        bankAddress: normalized['bankaddress'] || normalized['bank address'] || '',
-        courierDetails: normalized['courierdetails'] || normalized['courier details'] || '',
-        courierDate: normalized['courierdate'] || normalized['courier date'] || '',
-        surgeryName: normalized['surgeryname'] || normalized['surgery name'] || '',
-        remark: normalized['remark'] || '',
-        status: normalized['status'] || '',
-        paymentStatus: normalized['paymentstatus'] || normalized['payment status'] || ''
-    };
-}
-
-function mergeGoogleData(rows) {
-    let addedCount = 0;
-    rows.forEach(row => {
-        const patient = buildPatientFromGoogleRow(row);
-        if (!patient.uhid && !patient.name) return;
-        if (isDuplicatePatient(patient)) return;
-        ensurePatientId(patient);
-        patients.push(patient);
-        addedCount++;
-    });
-    return addedCount;
-}
-
-async function loadFromGoogleSheet() {
-    setSyncStatus('Loading from Google...', 'info');
-    const loadButton = document.getElementById('loadGoogleBtn');
-    if (loadButton) loadButton.innerText = 'Loading...';
-    try {
-        const response = await fetch(`${GOOGLE_SHEET_SCRIPT_URL}?action=load`);
-        if (!response.ok) {
-            const errorText = await response.text();
-            const cleanedError = String(errorText || '').replace(/<[^>]*>/g, '').trim();
-            setSyncStatus('Load failed', 'error');
-            const reason = response.status === 403
-                ? 'Access denied (403). Make sure the Google Apps Script URL is published as a public web app with access for anyone, even anonymous.'
-                : `${response.status} ${response.statusText}`;
-            return alert(`Load failed: ${reason}\n${cleanedError || 'No additional details returned.'}`);
-        }
-        const data = await response.json();
-        const rows = Array.isArray(data) ? data : data.rows || data.data || [];
-        if (!Array.isArray(rows) || !rows.length) {
-            setSyncStatus('No data found', 'error');
-            return alert('No data returned from Google.');
-        }
-        const addedCount = mergeGoogleData(rows);
-        save();
-        render();
-        setSyncStatus(`Loaded ${addedCount} records`, 'success');
-        alert(`Loaded ${addedCount} new record(s) from Google.`);
-    } catch (err) {
-        setSyncStatus('Load error', 'error');
-        const message = err && err.message ? err.message : 'Unknown error';
-        const userMessage = message.includes('Failed to fetch')
-            ? 'Failed to fetch data from Google. Make sure the Apps Script is published for public access and accessible from your browser.'
-            : `Failed to load data from Google. ${message}`;
-        alert(userMessage);
-    } finally {
-        if (loadButton) loadButton.innerText = 'Load from Google';
-    }
-}
-
-async function syncToGoogleSheet(isManual = true) {
-        const url = GOOGLE_SHEET_SCRIPT_URL; 
+  async function syncToGoogleSheet(isManual = true) {
+        const url = "https://script.google.com/macros/s/AKfycbykt0CDbQcl337GGY79W55JOXH1qEhvcm0vPFarHMTOkD4l-MLEkVC5BmeYBcig2_8/exec"; 
         if(!patients.length) {
             if (isManual) alert("No data to sync.");
             return;
         }
         const btn = document.getElementById("syncBtn");
         if (isManual) btn.innerText = "Syncing...";
-        setSyncStatus('Syncing...', 'info');
         try {
             const syncData = patients.map((p, i) => ({
                 patientName: p.name || '-',
@@ -1574,24 +1450,24 @@ async function syncToGoogleSheet(isManual = true) {
                 remark: p.remark || '-',
                 status: p.status || '-'
             }));
+            // Debug: Log the data being sent
+            console.log("Data being sent to Google Sheets:", syncData);
+            
             const response = await fetch(url, {
                 method: "POST",
-                headers: {
-                    'Content-Type': 'application/json'
-                },
                 body: JSON.stringify(syncData)
             });
             if (response.ok) {
                 alert("Synced successfully!");
-                setSyncStatus(`Last synced ${new Date().toLocaleTimeString()}`, 'success');
+                console.log("Auto-sync completed successfully at:", new Date().toLocaleString());
             } else {
                 const errorText = await response.text();
+                console.error("Sync failed", response.status, response.statusText, errorText);
                 if (isManual) alert(`Sync failed: ${response.status} ${response.statusText}`);
-                setSyncStatus('Sync failed', 'error');
             }
         } catch (e) {
-            if (isManual) alert("Error connecting to Google script. Please check the script deployment and network access.");
-            setSyncStatus('Sync error', 'error');
+            console.error("Error connecting to script:", e);
+            if (isManual) alert("Error connecting to script. Check console for details.");
         }
         finally { 
             if (isManual) btn.innerText = "Sync to Google Sheets"; 
