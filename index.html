@@ -55,100 +55,6 @@ button {
 button:hover {
     transform: translateY(-2px);
 }
-.btn-glow {
-    background: linear-gradient(45deg, #007bff, #00d4ff);
-    border: 2px solid #00d4ff;
-    box-shadow: 0 0 10px #00d4ff, 0 0 20px #007bff, inset 0 0 10px rgba(0, 212, 255, 0.3);
-    animation: glow 2s ease-in-out infinite;
-}
-.btn-glow:hover {
-    box-shadow: 0 0 20px #00d4ff, 0 0 40px #007bff, inset 0 0 15px rgba(0, 212, 255, 0.5);
-    animation: glow 1s ease-in-out infinite;
-}
-/* Green glow button */
-.btn-glow-green {
-    background: linear-gradient(45deg, #28a745, #20c997);
-    border: 2px solid #20c997;
-    box-shadow: 0 0 10px #20c997, 0 0 20px #28a745, inset 0 0 10px rgba(32, 201, 151, 0.3);
-    animation: glow-green 2s ease-in-out infinite;
-}
-.btn-glow-green:hover {
-    box-shadow: 0 0 20px #20c997, 0 0 40px #28a745, inset 0 0 15px rgba(32, 201, 151, 0.5);
-    animation: glow-green 1s ease-in-out infinite;
-}
-@keyframes glow-green {
-    0%, 100% {
-        box-shadow: 0 0 10px #20c997, 0 0 20px #28a745, inset 0 0 10px rgba(32, 201, 151, 0.3);
-    }
-    50% {
-        box-shadow: 0 0 20px #20c997, 0 0 30px #17a2b8, inset 0 0 15px rgba(32, 201, 151, 0.5);
-    }
-}
-/* Orange glow button */
-.btn-glow-orange {
-    background: linear-gradient(45deg, #ff6f00, #ffa500);
-    border: 2px solid #ffa500;
-    box-shadow: 0 0 10px #ffa500, 0 0 20px #ff6f00, inset 0 0 10px rgba(255, 165, 0, 0.3);
-    animation: glow-orange 2s ease-in-out infinite;
-}
-.btn-glow-orange:hover {
-    box-shadow: 0 0 20px #ffa500, 0 0 40px #ff6f00, inset 0 0 15px rgba(255, 165, 0, 0.5);
-    animation: glow-orange 1s ease-in-out infinite;
-}
-@keyframes glow-orange {
-    0%, 100% {
-        box-shadow: 0 0 10px #ffa500, 0 0 20px #ff6f00, inset 0 0 10px rgba(255, 165, 0, 0.3);
-    }
-    50% {
-        box-shadow: 0 0 20px #ffa500, 0 0 30px #ffb74d, inset 0 0 15px rgba(255, 165, 0, 0.5);
-    }
-}
-/* Red glow button */
-.btn-glow-red {
-    background: linear-gradient(45deg, #dc3545, #ff6b6b);
-    border: 2px solid #ff6b6b;
-    box-shadow: 0 0 10px #ff6b6b, 0 0 20px #dc3545, inset 0 0 10px rgba(255, 107, 107, 0.3);
-    animation: glow-red 2s ease-in-out infinite;
-}
-.btn-glow-red:hover {
-    box-shadow: 0 0 20px #ff6b6b, 0 0 40px #dc3545, inset 0 0 15px rgba(255, 107, 107, 0.5);
-    animation: glow-red 1s ease-in-out infinite;
-}
-@keyframes glow-red {
-    0%, 100% {
-        box-shadow: 0 0 10px #ff6b6b, 0 0 20px #dc3545, inset 0 0 10px rgba(255, 107, 107, 0.3);
-    }
-    50% {
-        box-shadow: 0 0 20px #ff6b6b, 0 0 30px #ff8787, inset 0 0 15px rgba(255, 107, 107, 0.5);
-    }
-}
-/* Purple glow button */
-.btn-glow-purple {
-    background: linear-gradient(45deg, #6f42c1, #9b59b6);
-    border: 2px solid #9b59b6;
-    box-shadow: 0 0 10px #9b59b6, 0 0 20px #6f42c1, inset 0 0 10px rgba(155, 89, 182, 0.3);
-    animation: glow-purple 2s ease-in-out infinite;
-}
-.btn-glow-purple:hover {
-    box-shadow: 0 0 20px #9b59b6, 0 0 40px #6f42c1, inset 0 0 15px rgba(155, 89, 182, 0.5);
-    animation: glow-purple 1s ease-in-out infinite;
-}
-@keyframes glow-purple {
-    0%, 100% {
-        box-shadow: 0 0 10px #9b59b6, 0 0 20px #6f42c1, inset 0 0 10px rgba(155, 89, 182, 0.3);
-    }
-    50% {
-        box-shadow: 0 0 20px #9b59b6, 0 0 30px #c39bd3, inset 0 0 15px rgba(155, 89, 182, 0.5);
-    }
-}
-@keyframes glow {
-    0%, 100% {
-        box-shadow: 0 0 10px #00d4ff, 0 0 20px #007bff, inset 0 0 10px rgba(0, 212, 255, 0.3);
-    }
-    50% {
-        box-shadow: 0 0 20px #00d4ff, 0 0 30px #0099ff, inset 0 0 15px rgba(0, 212, 255, 0.5);
-    }
-}
 button:last-child {
     margin-right: 0;
 }
@@ -166,29 +72,8 @@ button[style*="background:#ff6f00"] {
     color: #fff;
 }
 .btn-update { background:green; display:none; }
-.btn-edit { 
-    background: linear-gradient(45deg, #ff6f00, #ffa500);
-    border: 2px solid #ffa500;
-    color:white; 
-    margin-right: 5px; 
-    box-shadow: 0 0 10px #ffa500, 0 0 20px #ff6f00, inset 0 0 10px rgba(255, 165, 0, 0.3);
-    animation: glow-orange 2s ease-in-out infinite;
-    transition: box-shadow 0.3s ease;
-}
-.btn-edit:hover {
-    box-shadow: 0 0 20px #ffa500, 0 0 40px #ff6f00, inset 0 0 15px rgba(255, 165, 0, 0.5);
-}
-.btn-del { 
-    background: linear-gradient(45deg, #dc3545, #ff6b6b);
-    border: 2px solid #ff6b6b;
-    color:white; 
-    box-shadow: 0 0 10px #ff6b6b, 0 0 20px #dc3545, inset 0 0 10px rgba(255, 107, 107, 0.3);
-    animation: glow-red 2s ease-in-out infinite;
-    transition: box-shadow 0.3s ease;
-}
-.btn-del:hover {
-    box-shadow: 0 0 20px #ff6b6b, 0 0 40px #dc3545, inset 0 0 15px rgba(255, 107, 107, 0.5);
-}
+.btn-edit { background:orange; margin-right: 5px; color:white; }
+.btn-del { background:#dc3545; color:white; }
 .filters { margin:15px 0; display:flex; gap:10px; flex-wrap:wrap; background: #e8f5e9; padding: 15px; border-radius: 8px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #28a745; }
 table { width:100%; border-collapse:collapse; background:lightgray; }
 th, td { padding:10px; border:1px solid #ddd; text-align: left; font-size: 8px; }
@@ -256,7 +141,7 @@ tr:hover { background-color: #f9f9f9; }
 </div>
 <!-- FOLDER LOCATION SETTINGS - COLLAPSIBLE -->
 <div style="margin-bottom:20px;">
-    <button onclick="toggleFolderSettings()" class="btn-glow" style="width:100%; padding:12px; font-size:17px; border-radius:5px; color:white; font-weight:bold; cursor:pointer;">⚙️ FOLDER SETTINGS ⬇️</button>
+    <button onclick="toggleFolderSettings()" style="background:#808181; width:100%; padding:12px; font-size:17px; border:none; border-radius:5px; color:rgb(0, 0, 0); font-weight:bold; cursor:pointer;">⚙️ FOLDER SETTINGS ⬇️</button>
     
     <div id="folderSettingsPanel" style="display:none; background:#e8f5e9; padding:20px; border-radius:8px; margin-top:10px; border-left:5px solid #28a745;">
         <h3 style="margin-top:0; color:#333;">📁 Patient Folder Location</h3>
@@ -279,9 +164,9 @@ tr:hover { background-color: #f9f9f9; }
         </div>
         
         <div style="display:flex; gap:10px; flex-wrap:wrap;">
-            <button onclick="saveFolderPath()" class="btn-glow-green" style="color:white; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:bold; flex:1; min-width:150px;">💾 SAVE PATH</button>
-            <button onclick="resetFolderPath()" class="btn-glow" style="color:white; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:bold; flex:1; min-width:150px; background:linear-gradient(45deg, #6c757d, #495057);">↺ Reset to Desktop</button>
-            <button onclick="toggleFolderSettings()" class="btn-glow-red" style="color:white; padding:10px 20px; border-radius:5px; cursor:pointer; font-weight:bold; flex:1; min-width:150px;">❌ Close</button>
+            <button onclick="saveFolderPath()" style="background:#28a745; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer; font-weight:bold; flex:1; min-width:150px;">💾 SAVE PATH</button>
+            <button onclick="resetFolderPath()" style="background:#6c757d; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer; font-weight:bold; flex:1; min-width:150px;">↺ Reset to Desktop</button>
+            <button onclick="toggleFolderSettings()" style="background:#dc3545; color:white; padding:10px 20px; border:none; border-radius:5px; cursor:pointer; font-weight:bold; flex:1; min-width:150px;">❌ Close</button>
         </div>
         
         <div style="background:lightgray; padding:12px; border-radius:5px; margin-top:15px; border-left:4px solid #0066cc;">
@@ -381,12 +266,12 @@ tr:hover { background-color: #f9f9f9; }
                 <option value="Paid">Paid</option>
             </select>
         </div>
-        <div style="display:flex; align-items:flex-end; gap: 8px;">
-            <button id="addBtn" onclick="addPatientWithFolderCreation()" class="btn-glow">ADD</button>
-            <button onclick="clearForm()" class="btn-glow" style="background:linear-gradient(45deg, #6c757d, #495057);">CLEAR</button>
-            <button id="updateBtn" class="btn-update btn-glow-green" onclick="updatePatientWithFolderCreation()">Update</button>
-            <button onclick="toggleInvoiceSection()" class="btn-glow-orange" style="margin-left: auto;">Invoice</button>
-            <button onclick="openSpreadsheet()" class="btn-glow-orange">Email</button>
+        <div style="display:flex; align-items:flex-end;">
+            <button id="addBtn" onclick="addPatientWithFolderCreation()">ADD</button>
+            <button onclick="clearForm()">CLEAR</button>
+            <button id="updateBtn" class="btn-update" onclick="updatePatientWithFolderCreation()">Update</button>
+            <button onclick="toggleInvoiceSection()" style="background:#ff6f00; margin-left: auto;">Invoice</button>
+            <button onclick="openSpreadsheet()" style="background:#ff6f00;">Email</button>
         </div>
     </div>
 </div>
@@ -395,8 +280,8 @@ tr:hover { background-color: #f9f9f9; }
 <div id="invoiceSection" class="invoice-section">
     <h3>Invoice Making </h3>
     <div style="margin-bottom:10px; display:flex; flex-wrap:wrap; gap:10px; align-items:flex-start;">
-        <button type="button" onclick="addInvoiceRow()" class="btn-glow-green" style="color:#fff; font-weight:bold; margin-right:8px;">Add Row</button>
-        <button type="button" onclick="removeInvoiceRow()" class="btn-glow-red" style="color:#fff; font-weight:bold;">Remove Row</button>
+        <button type="button" onclick="addInvoiceRow()" style="background:#28a745; color:#fff; font-weight:bold; margin-right:8px;">Add Row</button>
+        <button type="button" onclick="removeInvoiceRow()" style="background:#dc3545; color:#fff; font-weight:bold;">Remove Row</button>
     </div>
     <div id="invoiceTotalsBox" style="display:flex; flex-wrap:wrap; gap:12px; margin-bottom:12px;">
         <div style="background:#fff; padding:10px 14px; border:1px solid #ddd; border-radius:8px; min-width:180px; box-shadow:0 1px 2px rgba(0,0,0,0.05);">
@@ -470,14 +355,14 @@ tr:hover { background-color: #f9f9f9; }
     <label style="display: flex; align-items: center; gap: 5px; font-size: 10px; white-space: nowrap;">
         <input type="checkbox" id="showHospitalHeader" checked> Header
     </label>
-    <button id="toggleAutoSyncBtn" onclick="toggleAutoSync()" class="auto-sync-btn btn-glow-green" style="width: auto; padding-left:20px; padding-right:20px;">Auto Sync: OFF</button>
+    <button id="toggleAutoSyncBtn" onclick="toggleAutoSync()" class="auto-sync-btn" style="background:#20c997; color:white;">Auto Sync: OFF</button>
     <input type="file" id="importFile" accept=".xlsx,.xls,.csv" style="display:none" onchange="importData(event)">
-    <button onclick="document.getElementById('importFile').click()" class="btn-glow" style="width: auto; padding-left:20px; padding-right:20px;">Import Data</button>
-    <button onclick="exportExcel()" class="btn-glow-green" style="width: auto; padding-left:20px; padding-right:20px;">Export Excel Report</button>
-    <button onclick="generateExportLetter()" class="btn-glow-purple" style="width: auto; padding-left:20px; padding-right:20px;">Generate Export Letter</button>
-    <button onclick="deleteSelected()" class="btn-glow-red" style="width: auto; padding-left:20px; padding-right:20px;">Delete Selected</button>
-    <button onclick="sendWhatsAppForSelectedDischargeApproved()" class="btn-glow-green" style="width: auto; padding-left:20px; padding-right:20px;">Send WhatsApp Message</button>
-    <button id="syncBtn" onclick="syncToGoogleSheet()" class="btn-glow" style="width: auto; padding-left:20px; padding-right:20px;">Sync to Google Sheets</button>
+    <button onclick="document.getElementById('importFile').click()" style="background:#17a2b8; width: auto; padding-left:20px; padding-right:20px;">Import Data</button>
+    <button onclick="exportExcel()" style="background:#28a745; width: auto; padding-left:20px; padding-right:20px;">Export Excel Report</button>
+    <button onclick="generateExportLetter()" style="background:#6f42c1; width: auto; padding-left:20px; padding-right:20px;">Generate Export Letter</button>
+    <button onclick="deleteSelected()" style="background:#dc3545; width: auto; padding-left:20px; padding-right:20px;">Delete Selected</button>
+    <button onclick="sendWhatsAppForSelectedDischargeApproved()" style="background:#25D366; width: auto; padding-left:20px; padding-right:20px;">Send WhatsApp Message</button>
+    <button id="syncBtn" onclick="syncToGoogleSheet()" style="background:#4285F4; width: auto; padding-left:20px; padding-right:20px;">Sync to Google Sheets</button>
 </div>
 
 <div style="overflow-x: auto;">
