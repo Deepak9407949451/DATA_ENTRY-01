@@ -172,45 +172,72 @@
         }
         
         .table-wrapper {
-            overflow-x: auto;
+            overflow: auto;
             border-radius: 8px;
-            border: 1px solid #e9ecef;
+            border: 1px solid #c2d0e0;
+            box-shadow: inset 0 0 0 1px #e0e7ef;
+            max-height: 520px;
         }
         
         table {
             width: 100%;
+            min-width: 2400px;
             border-collapse: collapse;
             background: white;
         }
         
         thead {
-            background: #f8f9fa;
-            border-bottom: 2px solid #667eea;
+            background: #eef4fb;
+            border-bottom: 2px solid #3c6ea5;
         }
         
         th {
-            padding: 15px;
+            padding: 12px 14px;
             text-align: left;
-            font-weight: 600;
-            color: #333;
-            font-size: 13px;
+            font-weight: 800;
+            color: #274060;
+            font-size: 12px;
             text-transform: uppercase;
             letter-spacing: 0.5px;
+            border-right: 1px solid #d3dae3;
+            border-bottom: 1px solid #d3dae3;
+            position: sticky;
+            top: 0;
+            background: #eef4fb;
+            z-index: 2;
+        }
+        
+        th:last-child {
+            border-right: none;
         }
         
         td {
-            padding: 12px 15px;
-            border-bottom: 1px solid #e9ecef;
+            padding: 12px 14px;
+            border: 1px solid #e3e9ef;
             font-size: 13px;
-            color: #555;
+            color: #2d3e50;
+            font-weight: 600;
+            white-space: nowrap;
         }
         
         tbody tr:hover {
-            background: #f8f9fa;
+            background: #dfeaf8;
         }
         
         tbody tr:nth-child(even) {
-            background: #fafbfc;
+            background: #f7fbff;
+        }
+        
+        tbody tr:nth-child(odd) {
+            background: #ffffff;
+        }
+        
+        tbody td:first-child,
+        thead th:first-child {
+            position: sticky;
+            left: 0;
+            background: #eef4fb;
+            z-index: 1;
         }
         
         .no-data {
@@ -352,6 +379,9 @@
             padding: 25px;
             flex-direction: column;
             align-items: flex-start;
+        }
+        .hidden {
+            display: none !important;
         }
         
         .collapsible-content.form-section.open {
@@ -535,7 +565,8 @@
     <div class="container">
         <div class="header">
             <h1>Insurance Claims Management System</h1>
-            <p>Manage patient claims and insurance records efficiently</p>
+            <p>BY DEEPAK SHRIWAS</p1>
+           
         </div>
         
         <div class="content">
@@ -667,11 +698,11 @@
             </div>
             
             <!-- Form Section -->
-            <div class="collapsible-header form-header" onclick="toggleCollapsible('formSection')">
+            <div id="formHeader" class="collapsible-header form-header hidden" onclick="toggleCollapsible('formSection')">
                 <span id="formTitleLabel">📝 Add New Claim:</span>
                 <span class="collapse-arrow" id="formArrow">▼</span>
             </div>
-            <div class="collapsible-content form-section" id="formSection">
+            <div class="collapsible-content form-section hidden" id="formSection">
                 <form id="claimForm">
                     <!-- Patient Information -->
                     <div class="form-row">
@@ -1021,6 +1052,7 @@
                 <h2>Claims Records</h2>
                 <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
                     <input type="text" id="searchBox" placeholder="🔍 Search all fields..." style="flex: 1; min-width: 240px; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+                    <button type="button" class="btn-primary" onclick="openClaimForm()">+ Add Claim</button>
                     <button type="button" class="btn-secondary cover-letter-btn" onclick="generateCoverLetter()">📄 Cover Letter</button>
                     <button id="deleteSelectedBtn" class="btn-danger" style="padding: 12px 20px; background: #dc3545; display: none;" onclick="deleteSelected()">🗑️ Delete Selected</button>
                 </div>
@@ -1741,13 +1773,21 @@
             const arrow = document.getElementById(arrowId);
             
             if (sectionId === 'formSection') {
-                section.classList.toggle('open');
+                if (section.classList.contains('hidden')) {
+                    section.classList.remove('hidden');
+                    section.classList.add('open');
+                } else {
+                    section.classList.remove('open');
+                    section.classList.add('hidden');
+                }
             } else {
                 const isHidden = section.style.display === 'none' || section.style.display === '';
                 section.style.display = isHidden ? 'flex' : 'none';
             }
             
-            arrow.classList.toggle('rotated');
+            if (arrow) {
+                arrow.classList.toggle('rotated');
+            }
         }
 
         function recalculateClaimAmounts() {
@@ -1811,6 +1851,45 @@
             }
         }
 
+        function openClaimForm(isEdit = false) {
+            const formHeader = document.getElementById('formHeader');
+            const formSection = document.getElementById('formSection');
+            const formArrow = document.getElementById('formArrow');
+            const titleLabel = document.getElementById('formTitleLabel');
+            const form = document.getElementById('claimForm');
+
+            setFormMode(isEdit);
+            if (!isEdit && form) form.reset();
+            if (titleLabel) titleLabel.textContent = isEdit ? '✏️ Edit Claim:' : '📝 Add New Claim:';
+            if (formHeader) formHeader.classList.remove('hidden');
+            if (formSection) {
+                formSection.classList.remove('hidden');
+                formSection.classList.add('open');
+            }
+            if (formArrow) {
+                formArrow.classList.add('rotated');
+            }
+            if (form) {
+                form.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+
+        function closeClaimForm() {
+            const formHeader = document.getElementById('formHeader');
+            const formSection = document.getElementById('formSection');
+            const formArrow = document.getElementById('formArrow');
+            if (formSection) {
+                formSection.classList.remove('open');
+                formSection.classList.add('hidden');
+            }
+            if (formHeader) {
+                formHeader.classList.add('hidden');
+            }
+            if (formArrow) {
+                formArrow.classList.remove('rotated');
+            }
+        }
+
         function generateClaimNo() {
             return 'CLM-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9).toUpperCase();
         }
@@ -1838,6 +1917,7 @@
                 localStorage.setItem('claims', JSON.stringify(claims));
                 document.getElementById('claimForm').reset();
                 setFormMode(false);
+                closeClaimForm();
                 updateDashboard();
                 renderTable();
                 return;
@@ -1880,6 +1960,7 @@
                 if (newClaim.status === 'Discharge Approved' && newClaim.patientName) createPatientFolderLocally(newClaim.patientName);
                 form.reset();
                 setFormMode(false);
+                closeClaimForm();
                 updateDashboard();
                 renderTable();
                 return;
@@ -1894,6 +1975,7 @@
             if (statusValue === 'Discharge Approved' && nameInput) createPatientFolderLocally(nameInput);
             form.reset();
             setFormMode(false);
+            closeClaimForm();
             updateDashboard();
             renderTable();
         }
@@ -1911,10 +1993,7 @@
             });
             
             setFormMode(true);
-            const formSection = document.getElementById('formSection');
-            if (formSection && !formSection.classList.contains('open')) {
-                toggleCollapsible('formSection');
-            }
+            openClaimForm(true);
             document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
             recalculateClaimAmounts();
             showAlert('Edit mode activated. Update and submit to save changes.', 'success');
@@ -2218,27 +2297,27 @@
             const payableText = payable === '-' ? '-' : `₹ ${Number(payable).toFixed(2)}`;
             return `Hello Sir/Madam,
 
-🏥 DISCHARGE & CLAIM APPROVAL NOTIFICATION.
+🏥 *DISCHARGE & CLAIM APPROVAL NOTIFICATION.*
 
 📋 Patient Details:
 
-Patient Name: ${name}
+Patient Name: *${name}*
 
-TPA Name: ${patient.tpaName || patient.tpa || '-'}
+TPA Name: *${patient.tpaName || patient.tpa || '-'}*
 
-Claim No: ${claim}
+Claim No: *${claim}*
 
 💰 Insurance Payment Details :
 
-Discharge Approved Amount: ${approvedText}
+Discharge Approved Amount: *${approvedText}*
 
-Deduction: ${deductionText}
+Deduction: *${deductionText}*
 
-Discount: ${discountText}
+Discount: *${discountText}*
 
-Amount Payable by Patient: ${payableText}
+Amount Payable by Patient: *${payableText}*
 
-Kindly visit the Billing Department to finalize your settlement.
+*Kindly visit the Billing Department to finalize your settlement.*
 
 Thank you for choosing our hospital.
 For any queries,
