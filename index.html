@@ -852,9 +852,35 @@
                     
                     <div class="form-row">
                         <div class="form-group">
-                            <label>Payment/UTR</label>
-                            <input type="text" name="paymentUTR" placeholder="UTR or Reference Number">
+                            <label>Bank Name</label>
+                            <input type="text" id="bankName" name="bankName" placeholder="Bank Name">
                         </div>
+                        <div class="form-group">
+                            <label>Bank Account Number</label>
+                            <input type="text" id="bankAccountNo" name="bankAccountNo" placeholder="Account Number">
+                        </div>
+                        <div class="form-group">
+                            <label>IFSC Code</label>
+                            <input type="text" id="ifscCode" name="ifscCode" placeholder="IFSC Code">
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Courier Details</label>
+                            <input type="text" name="courierDetails" placeholder="Courier Service/Tracking">
+                        </div>
+                        <div class="form-group">
+                            <label>Courier Date</label>
+                            <input type="date" name="courierDate">
+                        </div>
+                        <div class="form-group">
+                            <label>Insurance Address</label>
+                            <textarea id="insuranceAddress" name="insuranceAddress" placeholder="Full Address"></textarea>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
                         <div class="form-group">
                             <label>Attender Name</label>
                             <input type="text" name="attenderName" placeholder="Attender/Guardian Name">
@@ -1025,7 +1051,8 @@
                                 <th>Patient Pay</th>
                                 <th>Settlement Amount</th>
                                 <th>TDS Amount</th>
-                                <th>Payment/UTR</th>
+                                <th>Payment Date</th>
+                                <th>UTR</th>
                                 <th>Attender Name</th>
                                 <th>Relation</th>
                                 <th>Insurance Address</th>
@@ -1043,7 +1070,7 @@
                         </thead>
                         <tbody id="tableBody">
                             <tr class="no-data">
-                                <td colspan="39">No claims added yet. Add a new claim to get started.</td>
+                                <td colspan="40">No claims added yet. Add a new claim to get started.</td>
                             </tr>
                         </tbody>
                     </table>
@@ -1328,7 +1355,8 @@
                     patientPay: getClaimFieldValue(rawClaim, ['patientPay', 'Patient Pay']),
                     settlementAmount: getClaimFieldValue(rawClaim, ['settlementAmount', 'Settlement Amount']),
                     tds: getClaimFieldValue(rawClaim, ['tds', 'tdsAmount', 'TDS Amount']),
-                    paymentUTR: getClaimFieldValue(rawClaim, ['paymentUTR', 'paymentUtr', 'Payment/UTR']),
+                    paymentDate: getClaimFieldValue(rawClaim, ['paymentDate', 'payment_date', 'Payment Date']),
+                    utr: getClaimFieldValue(rawClaim, ['utr', 'UTR', 'utrno', 'payment_utr']),
                     attenderName: getClaimFieldValue(rawClaim, ['attenderName', 'Attender Name']),
                     relation: getClaimFieldValue(rawClaim, ['relation', 'Relation']),
                     insuranceAddress: getClaimFieldValue(rawClaim, ['insuranceAddress', 'Insurance Address']),
@@ -1743,15 +1771,31 @@
             const totalBill = parseAmount(totalBillInput);
             const approved = parseAmount(approvedInput);
             const discount = parseAmount(discountInput);
-            const settlementAmount = parseAmount(settlementAmountInput);
+            // If settlement amount field is empty, do not compute TDS/deduction (avoid showing Approved as Deduction)
+            const settlementEmpty = !settlementAmountInput || String(settlementAmountInput.value).trim() === '';
+            const settlementAmount = settlementEmpty ? null : parseAmount(settlementAmountInput);
 
             const patientPay = totalBill - approved - discount;
-            const tds = settlementAmount * 10 / 100;
-            const deduction = approved - settlementAmount;
 
             if (patientPayInput) patientPayInput.value = patientPay.toFixed(2);
-            if (tdsInput) tdsInput.value = tds.toFixed(2);
-            if (deductionInput) deductionInput.value = deduction.toFixed(2);
+
+            if (tdsInput) {
+                if (settlementEmpty) {
+                    tdsInput.value = '';
+                } else {
+                    tdsInput.value = (settlementAmount * 10 / 100).toFixed(2);
+                }
+            }
+
+            if (deductionInput) {
+                if (settlementEmpty) {
+                    deductionInput.value = '';
+                } else {
+                    // Deduction should be Approved minus Settlement (do NOT subtract TDS here)
+                    const deduction = approved - settlementAmount;
+                    deductionInput.value = deduction.toFixed(2);
+                }
+            }
         }
         
         function setFormMode(isEdit) {
@@ -2034,7 +2078,8 @@
                 'Patient Pay',
                 'Settlement Amount',
                 'TDS Amount',
-                'Payment/UTR',
+                'Payment Date',
+                'UTR',
                 'Attender Name',
                 'Relation',
                 'Insurance Address',
@@ -2073,7 +2118,8 @@
                 'Patient Pay': 'patientPay',
                 'Settlement Amount': 'settlementAmount',
                 'TDS Amount': 'tds',
-                'Payment/UTR': 'paymentUTR',
+                'Payment Date': 'paymentDate',
+                'UTR': 'utr',
                 'Attender Name': 'attenderName',
                 'Relation': 'relation',
                 'Insurance Address': 'insuranceAddress',
@@ -2395,7 +2441,8 @@ Hospital Administration - TPA Desk.`;
                     <td>${claim.patientPay || '-'}</td>
                     <td>${claim.settlementAmount || '-'}</td>
                     <td>${claim.tds || '-'}</td>
-                    <td>${claim.paymentUTR || '-'}</td>
+                    <td>${formatDateForDisplay(claim.paymentDate)}</td>
+                    <td>${claim.utr || '-'}</td>
                     <td>${claim.attenderName || '-'}</td>
                     <td>${claim.relation || '-'}</td>
                     <td>${claim.insuranceAddress || '-'}</td>
@@ -2450,7 +2497,7 @@ Hospital Administration - TPA Desk.`;
             'patient pay': 'patientPay',
             'settlement amount': 'settlementAmount',
             'tds amount': 'tds',
-            'payment/utr': 'paymentUTR',
+            'payment/utr': 'paymentDate',
             'attender name': 'attenderName',
             'relation': 'relation',
             'insurance address': 'insuranceAddress',
@@ -2811,7 +2858,7 @@ Hospital Administration - TPA Desk.`;
                 'Patient Pay': 'patientPay',
                 'Settlement Amount': 'settlementAmount',
                 'TDS Amount': 'tds',
-                'Payment/UTR': 'paymentUTR',
+                'Payment/UTR': 'paymentDate',
                 'Attender Name': 'attenderName',
                 'Relation': 'relation',
                 'Insurance Address': 'insuranceAddress',
@@ -3276,6 +3323,338 @@ Hospital Administration - TPA Desk.`;
             uhidEl.addEventListener('input', () => { if (!shouldEnableReadmit() && readmitCheckbox.checked) readmitCheckbox.checked = false; });
             nameEl.addEventListener('input', () => { if (!shouldEnableReadmit() && readmitCheckbox.checked) readmitCheckbox.checked = false; });
         });
+
+        render();
+
+// Load saved folder path on page load
+loadFolderPathSetting();
+
+// ============================================
+// FOLDER PATH SETTINGS
+// ============================================
+
+/**
+ * Toggle folder settings panel visibility
+ */
+function toggleFolderSettings() {
+    const panel = document.getElementById('folderSettingsPanel');
+    if (panel.style.display === 'none') {
+        panel.style.display = 'block';
+        loadFolderPathSetting();
+    } else {
+        panel.style.display = 'none';
+    }
+}
+
+/**
+ * Load saved folder path from localStorage on page load
+ */
+function loadFolderPathSetting() {
+    const savedPath = localStorage.getItem('patientFolderPath');
+    if (savedPath) {
+        document.getElementById('folderPath').value = savedPath;
+        document.getElementById('currentPathDisplay').textContent = savedPath;
+        console.log("[DEBUG] Loaded folder path:", savedPath);
+    } else {
+        // Default to Desktop
+        const desktopPath = "C:\\Users\\DEEPAK\\Desktop";
+        document.getElementById('folderPath').value = desktopPath;
+        document.getElementById('currentPathDisplay').textContent = desktopPath;
+        localStorage.setItem('patientFolderPath', desktopPath);
+    }
+}
+
+/**
+ * Handle folder select change
+ */
+function onFolderSelectChange() {
+    const selected = document.getElementById('folderSelect').value;
+    if (selected) {
+        document.getElementById('folderPath').value = selected;
+        saveFolderPath();
+        // Reset select to default
+        document.getElementById('folderSelect').value = '';
+    }
+}
+
+/**
+ * Save folder path to localStorage
+ */
+function saveFolderPath() {
+    const inputPath = document.getElementById('folderPath').value.trim();
+    
+    if (!inputPath || inputPath === '') {
+        showNotification('❌ Please enter a valid folder path', 'error');
+        return;
+    }
+    
+    // Save to localStorage
+    localStorage.setItem('patientFolderPath', inputPath);
+    document.getElementById('currentPathDisplay').textContent = inputPath;
+    
+    console.log("[DEBUG] Saved folder path:", inputPath);
+    showNotification('✓ Folder path saved successfully!\n' + inputPath, 'success');
+}
+
+/**
+ * Reset folder path to Desktop
+ */
+function resetFolderPath() {
+    const desktopPath = "C:\\Users\\DEEPAK\\Desktop";
+    document.getElementById('folderPath').value = desktopPath;
+    localStorage.setItem('patientFolderPath', desktopPath);
+    document.getElementById('currentPathDisplay').textContent = desktopPath;
+    console.log("[DEBUG] Reset folder path to:", desktopPath);
+    showNotification("✓ Reset to Desktop!\n" + desktopPath, "success");
+}
+
+// ============================================
+// AUTO-CREATE PATIENT FOLDER ON DISCHARGE
+// ============================================
+
+/**
+ * Create ONLY: [Custom Path]/[Patient Name (TPA) admission date]/
+ * No subfolders, no files
+ */
+async function createPatientFolderLocally(patientName) {
+    try {
+        console.log("[DEBUG] createPatientFolderLocally called with:", patientName);
+        
+        if (!patientName || patientName.trim() === '') {
+            console.log("[DEBUG] Patient name is empty!");
+            showNotification('Patient name is required', 'error');
+            return false;
+        }
+        
+        showNotification('Creating folder...', 'info');
+        
+        // Get TPA and DOA from form
+        const tpa = document.getElementById("tpa").value.trim();
+        const doa = document.getElementById("doa").value.trim();
+        
+        // Get the saved folder path
+        const folderPath = localStorage.getItem('patientFolderPath') || "C:\\Users\\DEEPAK\\Desktop";
+        
+        console.log("[DEBUG] Folder values - Name:", patientName, "TPA:", tpa, "DOA:", doa);
+        console.log("[DEBUG] Base folder path:", folderPath);
+        
+        // Call Python backend server
+        console.log("[DEBUG] Sending request to http://localhost:5000/api/create-folder");
+        
+        const response = await fetch('http://localhost:5000/api/create-folder', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                patientName: patientName,
+                tpa: tpa,
+                doa: doa,
+                baseFolderPath: folderPath
+            })
+        });
+        
+        console.log("[DEBUG] Response status:", response.status);
+        
+        const result = await response.json();
+        
+        console.log("[DEBUG] Response data:", result);
+        
+        if (result.success) {
+            const folderName = result.folder_name || `${patientName} (${tpa}) ${doa}`;
+            showNotification(
+                `✓ SUCCESS!\nFolder: ${folderName}\nPath: ${result.folder_path}`,
+                'success'
+            );
+            console.log('Folder created:', result);
+            return true;
+        } else {
+            console.log("[DEBUG] Server returned success: false");
+            showNotification('❌ Error: ' + result.message, 'error');
+            return false;
+        }
+    } catch (error) {
+        console.error('Folder creation error:', error);
+        showNotification(
+            '❌ Server not running!\nRun: python folder_creator.py',
+            'error'
+        );
+        return false;
+    }
+}
+
+/**
+ * Show notification to user
+ */
+function showNotification(message, type = 'info') {
+    const notification = document.createElement('div');
+    notification.style.cssText = `
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 20px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: bold;
+        z-index: 10000;
+        animation: slideIn 0.3s ease-out;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        max-width: 400px;
+        word-wrap: break-word;
+    `;
+    
+    if (type === 'success') {
+        notification.style.background = '#28a745';
+        notification.style.color = 'white';
+        notification.innerHTML = message;
+    } else if (type === 'error') {
+        notification.style.background = '#dc3545';
+        notification.style.color = 'white';
+        notification.innerHTML = message;
+    } else {
+        notification.style.background = '#17a2b8';
+        notification.style.color = 'white';
+        notification.innerHTML = message;
+    }
+    
+    document.body.appendChild(notification);
+    
+    // Add animation styles if not already in document
+    if (!document.getElementById('notificationStyles')) {
+        const style = document.createElement('style');
+        style.id = 'notificationStyles';
+        style.innerHTML = `
+            @keyframes slideIn {
+                from {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            @keyframes slideOut {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(400px);
+                    opacity: 0;
+                }
+            }
+        `;
+        document.head.appendChild(style);
+    }
+    
+    // Remove notification after 5 seconds
+    setTimeout(() => {
+        notification.style.animation = 'slideOut 0.3s ease-out forwards';
+        setTimeout(() => notification.remove(), 300);
+    }, 5000);
+}
+
+/**
+ * Add patient WITH folder creation when status = "Discharge Approved"
+ */
+function addPatientWithFolderCreation() {
+    const uhidValue = document.getElementById("uhid").value.trim();
+    const nameValue = document.getElementById("name").value.trim();
+    const statusValue = document.getElementById("status").value;
+    
+    console.log("[DEBUG] Add patient - Status:", statusValue);
+    
+    if (!uhidValue) return alert("UHID required");
+    
+    const existing = findExistingPatient(uhidValue);
+    let obj = buildPatientFromForm();
+    
+    if (existing) {
+        const reAdmit = confirm("This patient is already in the system. Would you like to re-admit them?");
+        if (!reAdmit) return;
+        // Populate form with existing data for re-admission (excludes ipdNo and doa)
+        populateFormForReAdmit(existing);
+        // Rebuild object after populating form
+        obj = buildPatientFromForm();
+        delete obj.id;
+    }
+    
+    ensurePatientId(obj);
+    patients.push(obj);
+    
+    // Create folder if status is "Discharge Approved"
+    if (statusValue === "Discharge Approved") {
+        console.log("[DEBUG] Creating folder for:", nameValue);
+        createPatientFolderLocally(nameValue);
+    } else {
+        console.log("[DEBUG] Status is NOT 'Discharge Approved', skipping folder creation");
+    }
+    
+    clearForm();
+    save();
+    render();
+}
+
+/**
+ * Update patient WITH folder creation when status = "Discharge Approved"
+ */
+function updatePatientWithFolderCreation() {
+    const statusValue = document.getElementById("status").value;
+    const patientName = document.getElementById("name").value.trim();
+    
+    // Update the patient record
+    fieldIds.forEach(id => patients[editIndex][id] = document.getElementById(id).value);
+    
+    // Create folder if status is "Discharge Approved"
+    if (statusValue === "Discharge Approved") {
+        createPatientFolderLocally(patientName);
+    }
+    
+    editIndex = -1;
+    document.getElementById("addBtn").style.display = "inline-block";
+    document.getElementById("updateBtn").style.display = "none";
+    clearForm();
+    save();
+    render();
+}
+
+/**
+ * Export all patient folders as Excel for backup
+ */
+function exportPatientFolders() {
+    const patientFolders = JSON.parse(localStorage.getItem('patientFolders')) || {};
+    
+    if (Object.keys(patientFolders).length === 0) {
+        alert('No patient folders to export');
+        return;
+    }
+    
+    const exportData = Object.entries(patientFolders).map(([name, folder]) => ({
+        'Patient Name': name,
+        'Created Date': new Date(folder.created).toLocaleDateString(),
+        'Status': folder.data.status || '',
+        'UHID': folder.data.uhid || '',
+        'Mobile': folder.data.mobile || '',
+        'Insurance': folder.data.tpa || '',
+        'Total Bill': folder.data.totalBill || '',
+        'Approved': folder.data.finalApproved || ''
+    }));
+    
+    const ws = XLSX.utils.json_to_sheet(exportData);
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, 'Patient Folders');
+    XLSX.writeFile(wb, `Patient_Folders_${new Date().toISOString().slice(0,10)}.xlsx`);
+    
+    showNotification('✓ Patient folders exported to Excel!', 'success');
+}
+
+// Add export button click handler
+window.addEventListener('load', function() {
+    // You can add a button to export patient folders if needed
+    console.log('Patient Folder System Ready!');
+    console.log('Total folders:', Object.keys(JSON.parse(localStorage.getItem('patientFolders')) || {}).length);
+});
     </script>
 </body>
 </html>
