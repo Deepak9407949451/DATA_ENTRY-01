@@ -881,35 +881,6 @@
                         </div>
                     </div>
                     
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Bank Name</label>
-                            <input type="text" id="bankName" name="bankName" placeholder="Bank Name">
-                        </div>
-                        <div class="form-group">
-                            <label>Bank Account Number</label>
-                            <input type="text" id="bankAccountNo" name="bankAccountNo" placeholder="Account Number">
-                        </div>
-                        <div class="form-group">
-                            <label>IFSC Code</label>
-                            <input type="text" id="ifscCode" name="ifscCode" placeholder="IFSC Code">
-                        </div>
-                    </div>
-                    
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label>Courier Details</label>
-                            <input type="text" name="courierDetails" placeholder="Courier Service/Tracking">
-                        </div>
-                        <div class="form-group">
-                            <label>Courier Date</label>
-                            <input type="date" name="courierDate">
-                        </div>
-                        <div class="form-group">
-                            <label>Insurance Address</label>
-                            <textarea id="insuranceAddress" name="insuranceAddress" placeholder="Full Address"></textarea>
-                        </div>
-                    </div>
                     
                     <div class="form-row">
                         <div class="form-group">
@@ -1391,11 +1362,11 @@
                     utr: getClaimFieldValue(rawClaim, ['utr', 'UTR', 'utrno', 'payment_utr']),
                     attenderName: getClaimFieldValue(rawClaim, ['attenderName', 'Attender Name']),
                     relation: getClaimFieldValue(rawClaim, ['relation', 'Relation']),
-                    insuranceAddress: getClaimFieldValue(rawClaim, ['insuranceAddress', 'Insurance Address']),
-                    bankName: getClaimFieldValue(rawClaim, ['bankName', 'Bank Name']),
-                    bankAccountNo: getClaimFieldValue(rawClaim, ['bankAccountNo', 'Bank Account No.', 'Bank Account No']),
-                    ifscCode: getClaimFieldValue(rawClaim, ['ifscCode', 'IFSC Code']),
-                    bankAddress: getClaimFieldValue(rawClaim, ['bankAddress', 'Bank Address']),
+                    insuranceAddress: getClaimFieldValue(rawClaim, ['insuranceAddress', 'Insurance Address', 'insuranceaddress']),
+                    bankName: getClaimFieldValue(rawClaim, ['bankName', 'Bank Name', 'bank', 'Bank', 'bankname']),
+                    bankAccountNo: getClaimFieldValue(rawClaim, ['bankAccountNo', 'Bank Account No.', 'Bank Account No', 'Bank Account Number', 'Account Number', 'bankaccountno', 'bankaccountnumber']),
+                    ifscCode: getClaimFieldValue(rawClaim, ['ifscCode', 'IFSC Code', 'IFSC', 'ifsc']),
+                    bankAddress: getClaimFieldValue(rawClaim, ['bankAddress', 'Bank Address', 'bankaddress']),
                     courierDetails: getClaimFieldValue(rawClaim, ['courierDetails', 'Courier Details']),
                     courierDate: getClaimFieldValue(rawClaim, ['courierDate', 'Courier Date']),
                     diagnosis: getClaimFieldValue(rawClaim, ['diagnosis', 'Diagnosis']),
@@ -2385,7 +2356,7 @@ Hospital Administration - TPA Desk.`;
 
         function buildCoverLetterDocument(rows, showHeader = true) {
             const letters = rows.map((row, index) => buildCoverLetterInstance(row, index, showHeader)).join('\n');
-            return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title></title><style>body{font-family:'Segoe UI',Arial,sans-serif;margin:0;padding:12px;background:#f0f2f5;display:flex;flex-direction:column;align-items:center}.letter-instance{background:white;width:210mm;height:297mm;padding:20mm;margin:auto;border:1px solid #ccc;box-sizing:border-box;position:relative;box-shadow:0 0 15px rgba(0,0,0,0.2);overflow:hidden;page-break-after:always}.hospital-header{border-bottom:1px solid #1a5c96;padding-bottom:6px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:6px}.hospital-info h2{margin:0 0 6px;color:#1a5c96;font-size:18px;letter-spacing:.8px;font-weight:bold}.hospital-info p{margin:1px 0;font-size:10px;color:#555}.hospital-image{max-width:100px;min-width:100px}.hospital-image img{width:100%;height:auto;object-fit:contain;max-height:90px}.letter-date{font-weight:bold;padding:1px 2px;font-size:15px;text-align:right}.ins-header{margin:8px 0 8px 0;font-size:12px;line-height:1.3;white-space:normal;text-align:left}.ins-header .ins-name,.ins-header .ins-address{display:block;width:100%;margin:0;padding:0}.ins-name{font-weight:bold;font-size:16px;text-transform:uppercase;margin-bottom:0}.border-box{border:1.5px solid #000;padding:10px;margin:10px 0 15px 0;font-weight:bold;line-height:1.5;font-size:13px}.claim-box{width:55%}.claim-box div{margin:0}.section-title{font-weight:bold;text-decoration:underline;display:block;margin-top:8px;font-size:12px}.detail-row{display:flex;gap:10px;margin-bottom:2px}.label{min-width:150px}.amount-section{background:#fafafa;border:1.5px solid #000;padding:18px;margin:5px 0}.rupee-amt{font-size:22px;font-weight:bold}.footer-sign{position:absolute;bottom:25mm;left:20mm;right:20mm;display:flex;justify-content:space-between;align-items:flex-end}.sign-block{text-align:center;border-top:1px solid #000;width:220px;padding-top:8px;font-size:15px}.stamp-circle{border:1.5px dashed #000;border-radius:50%;width:90px;height:90px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:10px}@media print{@page{size:letter;margin:0}body{padding:0;background:none}.letter-instance{border:none;margin:0;box-shadow:none;width:210mm;height:297mm;page-break-after:always}}</style></head><body>${letters}</body></html>`;
+            return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title></title><style>body{font-family:'Segoe UI',Arial,sans-serif;margin:0;padding:12px;background:#f0f2f5;display:flex;flex-direction:column;align-items:center}.letter-instance{background:white;width:210mm;height:297mm;padding:20mm;margin:auto;border:1px solid #ccc;box-sizing:border-box;position:relative;box-shadow:0 0 15px rgba(0,0,0,0.2);overflow:hidden;page-break-after:always}.hospital-header{border-bottom:1px solid #1a5c96;padding-bottom:6px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:6px}.hospital-info h2{margin:0 0 6px;color:#1a5c96;font-size:18px;letter-spacing:.8px;font-weight:bold}.hospital-info p{margin:1px 0;font-size:10px;color:#555}.hospital-image{max-width:100px;min-width:100px}.hospital-image img{width:100%;height:auto;object-fit:contain;max-height:90px}.letter-date{font-weight:bold;padding:1px 2px;font-size:15px;text-align:right}.ins-header{margin:8px 0 8px 0;font-size:12px;line-height:1.3;white-space:normal;text-align:left}.ins-header .ins-name,.ins-header .ins-address{display:block;width:100%;margin:0;padding:0}.ins-name{font-weight:bold;font-size:16px;text-transform:uppercase;margin-bottom:0}.border-box{border:1.5px solid #000;padding:10px;margin:10px 0 15px 0;font-weight:bold;line-height:1.5;font-size:13px}.claim-box{width:55%}.claim-box div{margin:0}.section-title{font-weight:bold;text-decoration:underline;display:block;margin-top:8px;font-size:12px}.detail-row{display:flex;gap:10px;margin-bottom:2px}.label{min-width:150px}.amount-section{background:#fafafa;border:1.5px solid #000;padding:18px;margin:5px 0}.rupee-amt{font-size:22px;font-weight:bold}.footer-sign{display:flex;width:100%;margin-top:24px;justify-content:flex-end;clear:both;padding-right:0}.sign-block{display:inline-flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;border-top:1px solid #000;width:260px;padding:16px 12px 0;font-size:15px;line-height:1.4;white-space:normal}.stamp-circle{border:1.5px dashed #000;border-radius:50%;width:90px;height:90px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:10px}@media print{@page{size:letter;margin:0}body{padding:0;background:none}.letter-instance{border:none;margin:0;box-shadow:none;width:210mm;height:297mm;page-break-after:always}}</style></head><body>${letters}</body></html>`;
         }
 
         function getMappedInsuranceAddress(name) {
@@ -2402,14 +2373,18 @@ Hospital Administration - TPA Desk.`;
         }
 
         function buildCoverLetterInstance(row, index, showHeader = true) {
-            const bankBranch = row.bankName ? `${row.bankName}${row.bankAddress ? ' - ' + row.bankAddress : ''}` : '';
+            const bankName = getClaimFieldValue(row, ['bankName', 'Bank Name', 'bank', 'Bank', 'bankname']);
+            const bankAccountNo = getClaimFieldValue(row, ['bankAccountNo', 'Bank Account No.', 'Bank Account No', 'Bank Account Number', 'Account Number', 'bankaccountno', 'bankaccountnumber']);
+            const ifscCode = getClaimFieldValue(row, ['ifscCode', 'IFSC Code', 'IFSC', 'ifsc']);
+            const bankAddress = getClaimFieldValue(row, ['bankAddress', 'Bank Address', 'bankaddress']);
+            const bankBranch = bankName ? `${bankName}${bankAddress ? ' - ' + bankAddress : ''}` : '';
             const approvedAmount = parseFloat(row.finalApproved || row.settlementAmount || row.approved || 0) || 0;
             const approvedAmountText = approvedAmount.toFixed(2);
             const amountInWords = numToIndianWords(approvedAmount) || 'Zero';
             const patientPay = parseFloat(row.patientPay || 0) || 0;
             const patientPayText = patientPay.toFixed(2);
             const patientPayWords = numToIndianWords(patientPay) || 'Zero';
-            const insuranceAddressText = row.insuranceAddress || getMappedInsuranceAddress(row.tpaName) || getMappedInsuranceAddress(row.insuranceCompany) || getMappedInsuranceAddress(row.tpa) || '';
+            const insuranceAddressText = getClaimFieldValue(row, ['insuranceAddress', 'Insurance Address', 'insuranceaddress']) || getMappedInsuranceAddress(row.tpaName) || getMappedInsuranceAddress(row.insuranceCompany) || getMappedInsuranceAddress(row.tpa) || '';
             const hospitalInfoContent = showHeader ? `<p>Near Sbi Commercial Bank Branch, Vyapar Vihar, Bilaspur, Chhattisgarh - 495001</p><p>Phone: 07752-446322, 9993392320 | Email: elitemedcityhospitals@gmail.com</p>` : '';
             const hospitalHeaderHtml = `
                 <div class="hospital-header">
@@ -2455,14 +2430,15 @@ Hospital Administration - TPA Desk.`;
                     <span class="section-title">BANK DISBURSEMENT DETAILS</span>
                     <div class="border-box">
                         <div class="detail-row"><span class="label">PAN Card No:</span> ABOFA7356E</div>
-                        <div class="detail-row"><span class="label">Account No:</span> ${escapeHtml(row.bankAccountNo || '')}</div>
-                        <div class="detail-row"><span class="label">IFSC Code:</span> ${escapeHtml(row.ifscCode || '')}</div>
+                        <div class="detail-row"><span class="label">Account No:</span> ${escapeHtml(bankAccountNo || '')}</div>
+                        <div class="detail-row"><span class="label">IFSC Code:</span> ${escapeHtml(ifscCode || '')}</div>
                         <div class="detail-row"><span class="label">Bank Name/Branch:</span> ${escapeHtml(bankBranch)}</div>
                     </div>
                     <p><strong>Enclosure:</strong> 1. <strong>Original Bill</strong> 2. <strong>Authorization</strong> 3. Discharge summary & Investigation & ID Proof & Implants</p>
                     <p>Thanking you,<br>Yours faithfully, </p>
-                    <div class="footer-sign"></div>
-                    <div class="sign-block"><strong>Deepak Shriwas</strong><br>Accounts Department</div>
+                    <div class="footer-sign">
+                        <div class="sign-block"><strong>Deepak Shriwa</div>
+                    </div>
                 </div>`;
         }
 
@@ -2621,9 +2597,13 @@ Hospital Administration - TPA Desk.`;
             'relation': 'relation',
             'insurance address': 'insuranceAddress',
             'bank name': 'bankName',
+            'bank': 'bankName',
             'bank account no.': 'bankAccountNo',
             'bank account no': 'bankAccountNo',
+            'bank account number': 'bankAccountNo',
+            'account number': 'bankAccountNo',
             'ifsc code': 'ifscCode',
+            'ifsc': 'ifscCode',
             'bank address': 'bankAddress',
             'courier details': 'courierDetails',
             'courier date': 'courierDate',
