@@ -1695,14 +1695,22 @@
 
         async function createPatientFolderLocally(patientName) {
             try {
-                const tpa = document.getElementById('tpa').value.trim();
-                const doa = document.querySelector('input[name="doa"]').value.trim();
-                const folderPath = localStorage.getItem('patientFolderPath') || 'C:\\Users\\DEEPAK\\Desktop';
+                console.log("[DEBUG] createPatientFolderLocally called with:", patientName);
 
                 if (!patientName || !patientName.trim()) {
                     showNotification('Patient name is required', 'error');
                     return false;
                 }
+
+                const tpaInput = document.getElementById('tpa') || document.querySelector('[name="tpaName"]');
+                const doaInput = document.querySelector('input[name="doa"]');
+                const tpa = tpaInput ? tpaInput.value.trim() : '';
+                const doa = doaInput ? doaInput.value.trim() : '';
+                const folderPath = localStorage.getItem('patientFolderPath') || 'C:\\Users\\DEEPAK\\Desktop';
+                const folderNameParts = [patientName];
+                if (tpa) folderNameParts.push(`(${tpa})`);
+                if (doa) folderNameParts.push(doa);
+                const folderName = folderNameParts.join(' ').trim();
 
                 showNotification('Creating folder...', 'info');
                 const response = await fetch('http://localhost:5000/api/create-folder', {
@@ -1712,13 +1720,14 @@
                         patientName: patientName,
                         tpa: tpa,
                         doa: doa,
+                        folderName: folderName,
                         baseFolderPath: folderPath
                     })
                 });
 
                 const result = await response.json();
                 if (result.success) {
-                    showNotification(`Folder created: ${result.folder_name || patientName}`, 'success');
+                    showNotification('Your folder has been successfully created.', 'success');
                     return true;
                 }
                 showNotification(result.message || 'Folder creation failed', 'error');
@@ -1894,7 +1903,7 @@
             return 'CLM-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9).toUpperCase();
         }
 
-        function addClaim(event) {
+        async function addClaim(event) {
             event.preventDefault();
 
             const form = document.getElementById('claimForm');
@@ -1911,10 +1920,17 @@
 
             // If editing existing claim, just replace
             if (editingIndex >= 0) {
+                const wasApprovedDischarge = claimFromForm.status === 'Discharge Approved';
                 claims[editingIndex] = claimFromForm;
                 editingIndex = -1;
-                showAlert('Claim updated successfully!', 'success');
                 localStorage.setItem('claims', JSON.stringify(claims));
+                if (wasApprovedDischarge && nameInput) {
+                    const created = await createPatientFolderLocally(nameInput);
+                    if (created) {
+                        showAlert('Your folder has been successfully created.', 'success');
+                    }
+                }
+                showAlert('Claim updated successfully!', 'success');
                 document.getElementById('claimForm').reset();
                 setFormMode(false);
                 closeClaimForm();
@@ -1957,7 +1973,12 @@
                 claims.push(newClaim);
                 localStorage.setItem('claims', JSON.stringify(claims));
                 showAlert('Patient re-admitted successfully (new serial created).', 'success');
-                if (newClaim.status === 'Discharge Approved' && newClaim.patientName) createPatientFolderLocally(newClaim.patientName);
+                if (newClaim.status === 'Discharge Approved' && newClaim.patientName) {
+                    const created = await createPatientFolderLocally(newClaim.patientName);
+                    if (created) {
+                        showAlert('Your folder has been successfully created.', 'success');
+                    }
+                }
                 form.reset();
                 setFormMode(false);
                 closeClaimForm();
@@ -1971,8 +1992,13 @@
             if (!toAdd.claimNo || toAdd.claimNo.trim() === '') toAdd.claimNo = generateClaimNo();
             claims.push(toAdd);
             localStorage.setItem('claims', JSON.stringify(claims));
+            if (statusValue === 'Discharge Approved' && nameInput) {
+                const created = await createPatientFolderLocally(nameInput);
+                if (created) {
+                    showAlert('Your folder has been successfully created.', 'success');
+                }
+            }
             showAlert('Claim added successfully!', 'success');
-            if (statusValue === 'Discharge Approved' && nameInput) createPatientFolderLocally(nameInput);
             form.reset();
             setFormMode(false);
             closeClaimForm();
@@ -3485,153 +3511,6 @@ function resetFolderPath() {
     document.getElementById('currentPathDisplay').textContent = desktopPath;
     console.log("[DEBUG] Reset folder path to:", desktopPath);
     showNotification("✓ Reset to Desktop!\n" + desktopPath, "success");
-}
-
-// ============================================
-// AUTO-CREATE PATIENT FOLDER ON DISCHARGE
-// ============================================
-
-/**
- * Create ONLY: [Custom Path]/[Patient Name (TPA) admission date]/
- * No subfolders, no files
- */
-async function createPatientFolderLocally(patientName) {
-    try {
-        console.log("[DEBUG] createPatientFolderLocally called with:", patientName);
-        
-        if (!patientName || patientName.trim() === '') {
-            console.log("[DEBUG] Patient name is empty!");
-            showNotification('Patient name is required', 'error');
-            return false;
-        }
-        
-        showNotification('Creating folder...', 'info');
-        
-        // Get TPA and DOA from form
-        const tpa = document.getElementById("tpa").value.trim();
-        const doa = document.getElementById("doa").value.trim();
-        
-        // Get the saved folder path
-        const folderPath = localStorage.getItem('patientFolderPath') || "C:\\Users\\DEEPAK\\Desktop";
-        
-        console.log("[DEBUG] Folder values - Name:", patientName, "TPA:", tpa, "DOA:", doa);
-        console.log("[DEBUG] Base folder path:", folderPath);
-        
-        // Call Python backend server
-        console.log("[DEBUG] Sending request to http://localhost:5000/api/create-folder");
-        
-        const response = await fetch('http://localhost:5000/api/create-folder', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-                patientName: patientName,
-                tpa: tpa,
-                doa: doa,
-                baseFolderPath: folderPath
-            })
-        });
-        
-        console.log("[DEBUG] Response status:", response.status);
-        
-        const result = await response.json();
-        
-        console.log("[DEBUG] Response data:", result);
-        
-        if (result.success) {
-            const folderName = result.folder_name || `${patientName} (${tpa}) ${doa}`;
-            showNotification(
-                `✓ SUCCESS!\nFolder: ${folderName}\nPath: ${result.folder_path}`,
-                'success'
-            );
-            console.log('Folder created:', result);
-            return true;
-        } else {
-            console.log("[DEBUG] Server returned success: false");
-            showNotification('❌ Error: ' + result.message, 'error');
-            return false;
-        }
-    } catch (error) {
-        console.error('Folder creation error:', error);
-        showNotification(
-            '❌ Server not running!\nRun: python folder_creator.py',
-            'error'
-        );
-        return false;
-    }
-}
-
-/**
- * Show notification to user
- */
-function showNotification(message, type = 'info') {
-    const notification = document.createElement('div');
-    notification.style.cssText = `
-        position: fixed;
-        top: 20px;
-        right: 20px;
-        padding: 15px 20px;
-        border-radius: 8px;
-        font-size: 14px;
-        font-weight: bold;
-        z-index: 10000;
-        animation: slideIn 0.3s ease-out;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        max-width: 400px;
-        word-wrap: break-word;
-    `;
-    
-    if (type === 'success') {
-        notification.style.background = '#28a745';
-        notification.style.color = 'white';
-        notification.innerHTML = message;
-    } else if (type === 'error') {
-        notification.style.background = '#dc3545';
-        notification.style.color = 'white';
-        notification.innerHTML = message;
-    } else {
-        notification.style.background = '#17a2b8';
-        notification.style.color = 'white';
-        notification.innerHTML = message;
-    }
-    
-    document.body.appendChild(notification);
-    
-    // Add animation styles if not already in document
-    if (!document.getElementById('notificationStyles')) {
-        const style = document.createElement('style');
-        style.id = 'notificationStyles';
-        style.innerHTML = `
-            @keyframes slideIn {
-                from {
-                    transform: translateX(400px);
-                    opacity: 0;
-                }
-                to {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-            }
-            @keyframes slideOut {
-                from {
-                    transform: translateX(0);
-                    opacity: 1;
-                }
-                to {
-                    transform: translateX(400px);
-                    opacity: 0;
-                }
-            }
-        `;
-        document.head.appendChild(style);
-    }
-    
-    // Remove notification after 5 seconds
-    setTimeout(() => {
-        notification.style.animation = 'slideOut 0.3s ease-out forwards';
-        setTimeout(() => notification.remove(), 300);
-    }, 5000);
 }
 
 /**
