@@ -880,7 +880,17 @@
                             <input type="number" name="tds" placeholder="TDS Amount" step="0.01">
                         </div>
                     </div>
-                    
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Payment Date</label>
+                            <input type="date" name="paymentDate">
+                        </div>
+                        <div class="form-group">
+                            <label>UTR</label>
+                            <input type="text" name="utr" placeholder="UTR Number">
+                        </div>
+                    </div>
                     
                     <div class="form-row">
                         <div class="form-group">
@@ -919,7 +929,12 @@
                         </div>
                         <div class="form-group">
                             <label>Bank Name</label>
-                            <input type="text" id="bankName" name="bankName" placeholder="Bank Name">
+                            <select id="bankName" name="bankName" onchange="populateBankDetailsFromBankSelection()">
+                                <option value="">-- Choose Bank --</option>
+                                <option value="HDFC BANK">HDFC BANK</option>
+                                <option value="UNION BANK">UNION BANK</option>
+                                <option value="AXIS BANK">AXIS BANK</option>
+                                </select>
                         </div>
                         <div class="form-group">
                             <label>Bank Account Number</label>
@@ -1127,6 +1142,12 @@
             ], { bankName: "AXIS BANK", bankAccountNo: "923020008483463", ifscCode: "UTIB0000164", bankAddress: "RAMA TRADE, OLD BUS STAND BILASPUR" })
         };
 
+        const bankDetailsByName = {
+            "HDFC BANK": { bankAccountNo: "50200059120370", ifscCode: "HDFC0000771", bankAddress: "LINK ROAD BILASPUR" },
+            "UNION BANK": { bankAccountNo: "619701010050404", ifscCode: "UBIN0561975", bankAddress: "VYPAR VIHAR BILASPUR" },
+            "AXIS BANK": { bankAccountNo: "923020008483463", ifscCode: "UTIB0000164", bankAddress: "RAMA TRADE, OLD BUS STAND BILASPUR" }
+        };
+
         const tpaInsuranceAddresses = {
             "ADITYA BIRLA GENERAL INSURANCE": "ADITYA BIRLA GENERAL INSURANCE 9th Floor, Tower 1, One Indiabulls Centre, Jupiter Mills Compound, 841, Senapati Bapat Marg, Elphinstone Road, Mumbai 400013",
             "SBI GENERAL INSURANCE": "Health Insurance Vertical SBI General Insurance Company Limited 9th Floor, Westport, Pan Card Club Road, Baner, Pune, Maharashtra - 411 045",
@@ -1161,15 +1182,27 @@
             "PARAMOUNT TPA": "PARAMOUNT TPA LTD Plot No. A-442, Road No-28, M.I.D.C Industrial Area, Wagle Estate, Ram Nagar, Vitthal Rukhumani Mandir, Thane-400604"
         };
 
+        function populateBankDetailsFromBankSelection() {
+            const bankNameField = document.getElementById("bankName");
+            const selectedValue = bankNameField ? bankNameField.value : "";
+            const details = bankDetailsByName[selectedValue] || {};
+            const bankAccountField = document.getElementById("bankAccountNo");
+            const ifscField = document.getElementById("ifscCode");
+            const bankAddressField = document.getElementById("bankAddress");
+            if (bankAccountField) bankAccountField.value = details.bankAccountNo || "";
+            if (ifscField) ifscField.value = details.ifscCode || "";
+            if (bankAddressField) bankAddressField.value = details.bankAddress || "";
+        }
+
         function populateBankDetailsFromTpa() {
             const selectedValue = document.getElementById("tpa").value;
             const details = tpaBankDetails[selectedValue] || {};
             const insuranceAddressField = document.getElementById("insuranceAddress");
-            const bankAddressField = document.getElementById("bankAddress");
-            document.getElementById("bankName").value = details.bankName || "";
-            document.getElementById("bankAccountNo").value = details.bankAccountNo || "";
-            document.getElementById("ifscCode").value = details.ifscCode || "";
-            bankAddressField.value = details.bankAddress || "";
+            const bankNameField = document.getElementById("bankName");
+            if (bankNameField) {
+                bankNameField.value = details.bankName || "";
+            }
+            populateBankDetailsFromBankSelection();
             insuranceAddressField.value = tpaInsuranceAddresses[selectedValue] || insuranceAddressField.value || "";
         }
 
