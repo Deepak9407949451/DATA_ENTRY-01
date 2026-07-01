@@ -565,8 +565,7 @@
     <div class="container">
         <div class="header">
             <h1>Insurance Claims Management System</h1>
-            <p>BY DEEPAK SHRIWAS</p1>
-           
+            <p>BY DEEPAK SHRIWAS</p>
         </div>
         
         <div class="content">
@@ -2388,91 +2387,343 @@ Hospital Administration - TPA Desk.`;
         }
 
         function buildCoverLetterDocument(rows, showHeader = true) {
-            const letters = rows.map((row, index) => buildCoverLetterInstance(row, index, showHeader)).join('\n');
-            return `<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title></title><style>body{font-family:'Segoe UI',Arial,sans-serif;margin:0;padding:12px;background:#f0f2f5;display:flex;flex-direction:column;align-items:center}.letter-instance{background:white;width:210mm;height:297mm;padding:20mm;margin:auto;border:1px solid #ccc;box-sizing:border-box;position:relative;box-shadow:0 0 15px rgba(0,0,0,0.2);overflow:hidden;page-break-after:always}.hospital-header{border-bottom:1px solid #1a5c96;padding-bottom:6px;margin-bottom:10px;display:flex;justify-content:space-between;align-items:flex-start;gap:6px}.hospital-info h2{margin:0 0 6px;color:#1a5c96;font-size:18px;letter-spacing:.8px;font-weight:bold}.hospital-info p{margin:1px 0;font-size:10px;color:#555}.hospital-image{max-width:100px;min-width:100px}.hospital-image img{width:100%;height:auto;object-fit:contain;max-height:90px}.letter-date{font-weight:bold;padding:1px 2px;font-size:15px;text-align:right}.ins-header{margin:8px 0 8px 0;font-size:12px;line-height:1.3;white-space:normal;text-align:left}.ins-header .ins-name,.ins-header .ins-address{display:block;width:100%;margin:0;padding:0}.ins-name{font-weight:bold;font-size:16px;text-transform:uppercase;margin-bottom:0}.border-box{border:1.5px solid #000;padding:10px;margin:10px 0 15px 0;font-weight:bold;line-height:1.5;font-size:13px}.claim-box{width:55%}.claim-box div{margin:0}.section-title{font-weight:bold;text-decoration:underline;display:block;margin-top:8px;font-size:12px}.detail-row{display:flex;gap:10px;margin-bottom:2px}.label{min-width:150px}.amount-section{background:#969393;border:1.5px solid #000;padding:18px;margin:5px 0}.rupee-amt{font-size:22px;font-weight:bold}.footer-sign{display:flex;width:100%;margin-top:24px;justify-content:flex-end;clear:both;padding-right:0}.sign-block{display:inline-flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;border-top:1px solid #000;width:260px;padding:16px 12px 0;font-size:15px;line-height:1.4;white-space:normal}.stamp-circle{border:1.5px dashed #000;border-radius:50%;width:90px;height:90px;display:flex;align-items:center;justify-content:center;text-align:center;font-size:10px}@media print{@page{size:letter;margin:0}body{padding:0;background:none}.letter-instance{border:none;margin:0;box-shadow:none;width:210mm;height:297mm;page-break-after:always}}</style></head><body>${letters}</body></html>`;
+            const letters = rows.map((row, index) => buildCoverLetterInstance(row, index, showHeader)).join('');
+            return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claim Cover Letter - Strict A4 Fit</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
         }
-
-        function getMappedInsuranceAddress(name) {
-            if (!name) return '';
-            const normalized = String(name).trim().toLowerCase();
-            if (!normalized) return '';
-            if (tpaInsuranceAddresses[name]) return tpaInsuranceAddresses[name];
-            for (let key in tpaInsuranceAddresses) {
-                if (key.toLowerCase() === normalized) {
-                    return tpaInsuranceAddresses[key];
-                }
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.4;
+            color: #333333;
+            background-color: #f4f6f9;
+            padding: 20px 0;
+        }
+        .letter-container {
+            width: 210mm;
+            height: 297mm;
+            margin: 0 auto 20px;
+            background: #ffffff;
+            padding: 15mm 20mm;
+            border: 1px solid #d1d5db;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            page-break-after: always;
+            break-after: page;
+        }
+        .letter-container:last-child {
+            page-break-after: auto;
+            break-after: auto;
+        }
+        .letterhead {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #d1d5db;
+            margin-bottom: 16px;
+        }
+        .hospital-image {
+            width: 70px;
+            max-width: 70px;
+        }
+        .hospital-image img {
+            display: block;
+            max-width: 100%;
+            height: auto;
+        }
+        .hospital-image-left {
+            order: 1;
+        }
+        .letterhead-center {
+            order: 2;
+            flex: 1 1 auto;
+            min-width: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .hospital-image-right {
+            order: 3;
+        }
+        .letterhead-center h1 {
+            font-size: 16px;
+            margin: 0 0 4px;
+            color: #1e3a8a;
+            letter-spacing: 0.8px;
+            text-transform: uppercase;
+        }
+        .letterhead-center p {
+            margin: 2px 0;
+            font-size: 12px;
+            color: #374151;
+        }
+        .header-date {
+            text-align: right;
+            font-weight: bold;
+            color: #4b5563;
+            font-size: 13px;
+        }
+        .address-section {
+            margin-top: 5px;
+            color: #1f2937;
+            font-size: 13px;
+        }
+        .subject {
+            font-weight: bold;
+            text-transform: uppercase;
+            margin-top: 15px;
+            border-bottom: 2px solid #1e3a8a;
+            padding-bottom: 3px;
+            color: #1e3a8a;
+            font-size: 13px;
+        }
+        p {
+            margin-top: 10px;
+            font-size: 13px;
+            text-align: justify;
+        }
+        .master-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 12px;
+            font-size: 12px;
+        }
+        .master-table th, .master-table td {
+            border: 1px solid #cbd5e1;
+            padding: 6px 10px;
+            text-align: left;
+        }
+        .master-table th {
+            background-color: #1e3a8a;
+            color: #ffffff;
+            font-weight: bold;
+            text-transform: uppercase;
+            font-size: 11px;
+            letter-spacing: 0.5px;
+        }
+        .master-table .category-row {
+            background-color: #eff6ff;
+            font-weight: bold;
+            color: #1e40af;
+            border-top: 1.5px solid #bfdbfe;
+            border-bottom: 1.5px solid #bfdbfe;
+            font-size: 12px;
+            padding: 4px 10px;
+        }
+        .master-table .label-cell {
+            width: 40%;
+            font-weight: bold;
+            color: #4b5563;
+            background-color: #f9fafb;
+        }
+        .master-table .value-cell {
+            width: 60%;
+            color: #111111;
+        }
+        .amount-highlight {
+            color: #b91c1c;
+        }
+        .signature {
+            margin-top: 20px;
+            font-size: 13px;
+        }
+        @media print {
+            body {
+                background-color: #ffffff;
+                padding: 0;
             }
-            return '';
+            .letter-container {
+                width: 210mm;
+                height: 297mm;
+                border: none;
+                box-shadow: none;
+                padding: 15mm 20mm;
+                page-break-inside: avoid;
+                page-break-after: avoid;
+            }
+            .master-table th {
+                background-color: #1e3a8a !important;
+                color: #ffffff !important;
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+            .master-table .category-row {
+                background-color: #eff6ff !important;
+                color: #1e40af !important;
+                print-color-adjust: exact;
+                -webkit-print-color-adjust: exact;
+            }
+            @page {
+                size: A4;
+                margin: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+${letters}
+</body>
+</html>`;
         }
 
         function buildCoverLetterInstance(row, index, showHeader = true) {
-            const bankName = getClaimFieldValue(row, ['bankName', 'Bank Name', 'bank', 'Bank', 'bankname']);
-            const bankAccountNo = getClaimFieldValue(row, ['bankAccountNo', 'Bank Account No.', 'Bank Account No', 'Bank Account Number', 'Account Number', 'bankaccountno', 'bankaccountnumber']);
-            const ifscCode = getClaimFieldValue(row, ['ifscCode', 'IFSC Code', 'IFSC', 'ifsc']);
-            const bankAddress = getClaimFieldValue(row, ['bankAddress', 'Bank Address', 'bankaddress']);
-            const bankBranch = bankName ? `${bankName}${bankAddress ? ' - ' + bankAddress : ''}` : '';
-            const approvedAmount = parseFloat(row.finalApproved || row.settlementAmount || row.approved || 0) || 0;
-            const approvedAmountText = approvedAmount.toFixed(2);
-            const amountInWords = numToIndianWords(approvedAmount) || 'Zero';
-            const patientPay = parseFloat(row.patientPay || 0) || 0;
-            const patientPayText = patientPay.toFixed(2);
-            const patientPayWords = numToIndianWords(patientPay) || 'Zero';
-            const insuranceAddressText = getClaimFieldValue(row, ['insuranceAddress', 'Insurance Address', 'insuranceaddress']) || getMappedInsuranceAddress(row.tpaName) || getMappedInsuranceAddress(row.insuranceCompany) || getMappedInsuranceAddress(row.tpa) || '';
-            const hospitalInfoContent = showHeader ? `<p>Near Sbi Commercial Bank Branch, Vyapar Vihar, Bilaspur, Chhattisgarh - 495001</p><p>Phone: 07752-446322, 9993392320 | Email: elitemedcityhospitals@gmail.com</p>` : '';
-            const hospitalHeaderHtml = `
-                <div class="hospital-header">
-                    <div class="hospital-image hospital-image-left"><a href="https://imgbb.com/"><img src="https://i.ibb.co/HD6X4CBx/mono.png" alt="mono" border="0"></a></div>
-                    <div class="hospital-info">
-                        <h2>Arpa Medcity Hospital & Research Institute</h2>
-                         ${hospitalInfoContent}
-                    </div>
-                    <div class="hospital-image hospital-image-right"><a href="https://ibb.co/8DcBDXBC"><img src="https://i.ibb.co/MD6hD9hv/logo.png" alt="logo" border="0"></a></div>
-                </div>`;
+            const insuranceAddress = row.insuranceAddress || row.tpaName || row.insuranceCompany || '[TPA Name / Address]';
+            const companyName = row.insuranceCompany || '[Insurance Company Name]';
+            const claimNo = row.claimNo || '[Insert Claim No]';
+            const policyNumber = getClaimFieldValue(row, ['policyNumber', 'policyNo', 'Policy No']) || '[Insert Policy No]';
+            const insuranceID = getClaimFieldValue(row, ['insuranceID']) || '[Insert Member ID]';
+            const empID = getClaimFieldValue(row, ['empID', 'empIdNo', 'EMP ID No', 'EMP ID']) || '[Insert Employee ID]';
+            const patientName = row.patientName || '[Insert Patient Name]';
+            const ipdNo = row.ipdNo || '[Insert IP ID]';
+            const billInvoiceNo = row.billInvoiceNo || '[Insert Billing Number]';
+            const doa = formatDateForDisplay(row.doa);
+            const dod = formatDateForDisplay(row.dod);
+            const totalBill = row.totalBill || '0.00';
+            const patientPay = row.patientPay || '0.00';
+            const panCardNo = row.pan || row.panCardNo || 'ABOFA7356E';
+            const bankAccountNo = row.bankAccountNo || '[Insert Account No]';
+            const ifscCode = row.ifscCode || '[Insert IFSC Code]';
+            const bankName = row.bankName || '[Insert Bank Name/Branch]';
+            const addressCityLine = row.insuranceCity || row.city ? `${escapeHtml(row.insuranceCity || row.city)}, ${escapeHtml(row.insuranceState || '')} ${escapeHtml(row.insurancePin || row.pin || '')}` : '';
+            const today = new Date();
+            const headerDate = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
+            const totalBillNumeric = parseFloat(String(totalBill).replace(/[^0-9.-]/g, '')) || 0;
+            const patientPayNumeric = parseFloat(String(patientPay).replace(/[^0-9.-]/g, '')) || 0;
+            const totalBillWords = totalBillNumeric === 0 ? 'Zero Rupees' : (totalBillNumeric ? `${numToIndianWords(Math.floor(totalBillNumeric))} Only` : '[Insert Amount in Words]');
+            const patientPayWords = patientPayNumeric === 0 ? 'Zero Rupees' : (patientPayNumeric ? `${numToIndianWords(Math.floor(patientPayNumeric))} Only` : '[Insert Amount in Words]');
 
-            return `
-                <div class="letter-instance">
-                    ${hospitalHeaderHtml}
-                    <div class="letter-date">Date: ${escapeHtml(getRowLetterDate(row))}</div>
-                    <div class="ins-header">To,<br><span class="ins-name">${escapeHtml(row.insuranceCompany || row.tpaName || row.tpa || '')}</span><div class="ins-address">${escapeHtml(insuranceAddressText)}</div></div>
-                    <div class="border-box claim-box">
-                        <div>CLAIM NO: ${escapeHtml(row.claimNo || '')}</div>
-                        <div>MEMBER ID: ${escapeHtml(row.insuranceID || row.insuranceId || '')}</div>
-                        <div>POLICY NO: ${escapeHtml(row.policyNumber || row.policyNo || '')}</div>
-                        <div>EMP_ID: ${escapeHtml(row.empID || row.empId || '')}</div>
-                    </div>
-                    <p>Dear Sir,</p>
-                    <p>This is to bring to your kind attention that we have enclosed a claim document/s of your member who have availed cashless treatment based on your approval.</p>
-                    <span class="section-title">PATIENT DETAILS</span>
-                    <div class="border-box">
-                        <div class="detail-row"><span class="label">Patient Name:</span> ${escapeHtml(row.patientName || row.name || '')}</div>
-                        <div class="detail-row"><span class="label">IP ID:</span> ${escapeHtml(row.ipdNo || '')}</div>
-                        <div class="detail-row"><span class="label">Billing Number:</span> ${escapeHtml(row.billInvoiceNo || '')}</div>
-                        <div class="detail-row"><span class="label">Date of Admission:</span> ${escapeHtml(formatDate(row.doa))}</div>
-                        <div class="detail-row"><span class="label">Date of Discharge:</span> ${escapeHtml(formatDate(row.dod))}</div>
-                    </div>
-                    <div class="amount-section">
-                        <strong>TOTAL DUE AMOUNT FOR PAYMENT :</strong>
-                        <span class="rupee-amt">₹ ${approvedAmountText}</span>
-                        <div style="font-style: italic; margin-top: 4px; font-weight: normal; font-size: 13px;">Rupees ${escapeHtml(amountInWords)} Only</div>
-                        <div style="margin-top: 6px; font-size: 15px; color: #1a5c96;">
-                            <div>AMOUNT PAID BY PATIENT <span>₹ ${patientPayText}</span></div>
-                            <div style="font-style: italic; font-weight: normal; font-size: 12px;">Rupees ${escapeHtml(patientPayWords)} Only</div>
-                        </div>
-                    </div>
-                    <p>Kindly send us payment for an amount in favour of "Arpa Medcity Hospital & Research Institute" payable at Bilaspur.</p>
-                    <span class="section-title">BANK DISBURSEMENT DETAILS</span>
-                    <div class="border-box">
-                        <div class="detail-row"><span class="label">PAN Card No:</span> ABOFA7356E</div>
-                        <div class="detail-row"><span class="label">Account No:</span> ${escapeHtml(bankAccountNo || '')}</div>
-                        <div class="detail-row"><span class="label">IFSC Code:</span> ${escapeHtml(ifscCode || '')}</div>
-                        <div class="detail-row"><span class="label">Bank Name/Branch:</span> ${escapeHtml(bankBranch)}</div>
-                    </div>
-                    <p><strong>Enclosure:</strong> 1. <strong>Original Bill</strong> 2. <strong>Authorization</strong> 3. Discharge summary & Investigation & ID Proof & Implants</p>
-                    <p>Thanking you,<br>Yours faithfully, </p>
-                    <div class="footer-sign">
-                        <div class="sign-block"><strong>Deepak Shriwa</div>
-                    </div>
-                </div>`;
+            return `<div class="letter-container">
+    <div class="letterhead">
+        <div class="hospital-image hospital-image-left">
+            <a href="https://imgbb.com/"><img src="https://i.ibb.co/HD6X4CBx/mono.png" alt="mono" border="0"></a>
+        </div>
+        <div class="letterhead-center">
+            <h1>ARPA MEDCITY HOSPITAL &amp; RESEARCH INSTITUTE</h1>
+            <p>Near Sbi Commercial Bank Branch, Vyapar Vihar, Bilaspur, Chhattisgarh - 495001</p>
+            <p>Phone: 07752-446322, 9993392320 | Email: elitemedcityhospitals@gmail.com</p>
+        </div>
+        <div class="hospital-image hospital-image-right">
+            <a href="https://ibb.co/8DcBDXBC"><img src="https://i.ibb.co/MD6hD9hv/logo.png" alt="logo" border="0"></a>
+        </div>
+    </div>
+    <div>
+        <div class="header-date">Date: ${escapeHtml(headerDate)}</div>
+        <div class="address-section">
+            To,<br>
+            <strong>${escapeHtml(companyName)}</strong><br>
+            <strong>${escapeHtml(insuranceAddress)}</strong><br>
+            ${escapeHtml(addressCityLine)}
+        </div>        
+        <p>Dear Sir/Madam,</p>
+        <p>This is to bring to your kind attention that we have enclosed a claim document/s of your member who have availed cashless treatment based on your approval.Kindly send us payment for an amount in favour of "Arpa Medcity Hospital & Research Institute Bilaspur.</p>
+        <table class="master-table">
+            <thead>
+                <tr>
+                    <th>Parameter Fields</th>
+                    <th>Corresponding Details / Information</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="category-row">
+                    <td colspan="2">1. POLICY &amp; CLAIM DETAILS </td>
+                </tr>
+                <tr>
+                    <td class="label-cell"><strong>CLAIM NO:</strong></td>
+                    <td class="value-cell">${escapeHtml(claimNo)}</td>
+                </tr>
+                <tr>
+                    <td class="label-cell"><strong>MEMBER ID:</strong></td>
+                    <td class="value-cell">${escapeHtml(insuranceID)}</td>
+                </tr>
+                <tr>
+                    <td class="label-cell"><strong>POLICY NO:</strong></td>
+                    <td class="value-cell">${escapeHtml(policyNumber)}</td>
+                </tr>
+                <tr>
+                    <td class="label-cell"><strong>EMP_ID:</strong></td>
+                    <td class="value-cell">${escapeHtml(empID)}</td>
+                </tr>
+                <tr class="category-row">
+                    <td colspan="2"><strong>2. PATIENT DETAILS</strong></td>
+                </tr>
+                <tr>
+                    <td class="label-cell"><strong>Patient Name:</strong></td>
+                    <td class="value-cell"><strong>${escapeHtml(patientName)}</strong></td>
+                </tr>
+                <tr>
+                    <td class="label-cell"><strong>IP ID:</strong></td>
+                    <td class="value-cell">${escapeHtml(ipdNo)}</td>
+                </tr>
+                <tr>
+                    <td class="label-cell"><strong>Billing Number:</strong></td>
+                    <td class="value-cell">${escapeHtml(billInvoiceNo)}</td>
+                </tr>
+                <tr>
+                    <td class="label-cell"><strong>Date of Admission:</strong></td>
+                    <td class="value-cell">${escapeHtml(doa)}</td>
+                </tr>
+                <tr>
+                    <td class="label-cell"><strong>Date of Discharge:</strong></td>
+                    <td class="value-cell">${escapeHtml(dod)}</td>
+                </tr>
+                <tr class="category-row">
+                    <td colspan="2"><strong>3. BILLING DETAILS </strong></td>
+                </tr>
+                <tr>
+                    <td class="label-cell"><strong>Total Amount Due:</strong></td>
+                    <td class="value-cell amount-highlight"><strong>₹ ${escapeHtml(totalBill)} (${escapeHtml(totalBillWords)})</strong></td>
+                </tr>
+                <tr>
+                    <td class="label-cell"><strong>Amount Paid by Patient:</strong></td>
+                    <td class="value-cell amount-highlight">₹ ${escapeHtml(patientPay)} (${escapeHtml(patientPayWords)})</td>
+                </tr>
+                <tr class="category-row">
+                    <td colspan="2"><strong>4. BANK DISBURSEMENT DETAILS (FOR NEFT) </strong></td>
+                </tr>
+                <tr>
+                    <td class="label-cell"><strong>PAN Card No:</strong></td>
+                    <td class="value-cell"><strong>${escapeHtml(panCardNo)}</strong></td>
+                </tr>
+                <tr>
+                    <td class="label-cell"><strong>Account No:</strong></td>
+                    <td class="value-cell"><strong>${escapeHtml(bankAccountNo)}</strong></td>
+                </tr>
+                <tr>
+                    <td class="label-cell"><strong>IFSC Code:</strong></td>
+                    <td class="value-cell"><strong>${escapeHtml(ifscCode)}</strong></td>
+                </tr>
+                <tr>
+                    <td class="label-cell"><strong>Bank Name/Branch:</strong></td>
+                    <td class="value-cell"><strong>${escapeHtml(bankName)}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+        <p><strong>ENCLOSED DOCUMENTS: 1. Original Bill 2. Authorization 3. Discharge summary & Investigation & ID Proof & Implants.</strong></p>
+    </div>
+    <div>
+        <p>Thanking you.</p>
+        <div class="signature">
+            Yours sincerely,<br><br><br>
+            ___________________________<br>
+            <strong>Deepak Shriwas</strong><br>
+            Contact Number: 9009446861
+        </div>
+    </div>
+</div>`;
         }
 
         function escapeHtml(text) {
@@ -3457,189 +3708,6 @@ Hospital Administration - TPA Desk.`;
         });
 
         render();
-
-// Load saved folder path on page load
-loadFolderPathSetting();
-
-// ============================================
-// FOLDER PATH SETTINGS
-// ============================================
-
-/**
- * Toggle folder settings panel visibility
- */
-function toggleFolderSettings() {
-    const panel = document.getElementById('folderSettingsPanel');
-    if (panel.style.display === 'none') {
-        panel.style.display = 'block';
-        loadFolderPathSetting();
-    } else {
-        panel.style.display = 'none';
-    }
-}
-
-/**
- * Load saved folder path from localStorage on page load
- */
-function loadFolderPathSetting() {
-    const savedPath = localStorage.getItem('patientFolderPath');
-    if (savedPath) {
-        document.getElementById('folderPath').value = savedPath;
-        document.getElementById('currentPathDisplay').textContent = savedPath;
-        console.log("[DEBUG] Loaded folder path:", savedPath);
-    } else {
-        // Default to Desktop
-        const desktopPath = "C:\\Users\\DEEPAK\\Desktop";
-        document.getElementById('folderPath').value = desktopPath;
-        document.getElementById('currentPathDisplay').textContent = desktopPath;
-        localStorage.setItem('patientFolderPath', desktopPath);
-    }
-}
-
-/**
- * Handle folder select change
- */
-function onFolderSelectChange() {
-    const selected = document.getElementById('folderSelect').value;
-    if (selected) {
-        document.getElementById('folderPath').value = selected;
-        saveFolderPath();
-        // Reset select to default
-        document.getElementById('folderSelect').value = '';
-    }
-}
-
-/**
- * Save folder path to localStorage
- */
-function saveFolderPath() {
-    const inputPath = document.getElementById('folderPath').value.trim();
-    
-    if (!inputPath || inputPath === '') {
-        showNotification('❌ Please enter a valid folder path', 'error');
-        return;
-    }
-    
-    // Save to localStorage
-    localStorage.setItem('patientFolderPath', inputPath);
-    document.getElementById('currentPathDisplay').textContent = inputPath;
-    
-    console.log("[DEBUG] Saved folder path:", inputPath);
-    showNotification('✓ Folder path saved successfully!\n' + inputPath, 'success');
-}
-
-/**
- * Reset folder path to Desktop
- */
-function resetFolderPath() {
-    const desktopPath = "C:\\Users\\DEEPAK\\Desktop";
-    document.getElementById('folderPath').value = desktopPath;
-    localStorage.setItem('patientFolderPath', desktopPath);
-    document.getElementById('currentPathDisplay').textContent = desktopPath;
-    console.log("[DEBUG] Reset folder path to:", desktopPath);
-    showNotification("✓ Reset to Desktop!\n" + desktopPath, "success");
-}
-
-/**
- * Add patient WITH folder creation when status = "Discharge Approved"
- */
-function addPatientWithFolderCreation() {
-    const uhidValue = document.getElementById("uhid").value.trim();
-    const nameValue = document.getElementById("name").value.trim();
-    const statusValue = document.getElementById("status").value;
-    
-    console.log("[DEBUG] Add patient - Status:", statusValue);
-    
-    if (!uhidValue) return alert("UHID required");
-    
-    const existing = findExistingPatient(uhidValue);
-    let obj = buildPatientFromForm();
-    
-    if (existing) {
-        const reAdmit = confirm("This patient is already in the system. Would you like to re-admit them?");
-        if (!reAdmit) return;
-        // Populate form with existing data for re-admission (excludes ipdNo and doa)
-        populateFormForReAdmit(existing);
-        // Rebuild object after populating form
-        obj = buildPatientFromForm();
-        delete obj.id;
-    }
-    
-    ensurePatientId(obj);
-    patients.push(obj);
-    
-    // Create folder if status is "Discharge Approved"
-    if (statusValue === "Discharge Approved") {
-        console.log("[DEBUG] Creating folder for:", nameValue);
-        createPatientFolderLocally(nameValue);
-    } else {
-        console.log("[DEBUG] Status is NOT 'Discharge Approved', skipping folder creation");
-    }
-    
-    clearForm();
-    save();
-    render();
-}
-
-/**
- * Update patient WITH folder creation when status = "Discharge Approved"
- */
-function updatePatientWithFolderCreation() {
-    const statusValue = document.getElementById("status").value;
-    const patientName = document.getElementById("name").value.trim();
-    
-    // Update the patient record
-    fieldIds.forEach(id => patients[editIndex][id] = document.getElementById(id).value);
-    
-    // Create folder if status is "Discharge Approved"
-    if (statusValue === "Discharge Approved") {
-        createPatientFolderLocally(patientName);
-    }
-    
-    editIndex = -1;
-    document.getElementById("addBtn").style.display = "inline-block";
-    document.getElementById("updateBtn").style.display = "none";
-    clearForm();
-    save();
-    render();
-}
-
-/**
- * Export all patient folders as Excel for backup
- */
-function exportPatientFolders() {
-    const patientFolders = JSON.parse(localStorage.getItem('patientFolders')) || {};
-    
-    if (Object.keys(patientFolders).length === 0) {
-        alert('No patient folders to export');
-        return;
-    }
-    
-    const exportData = Object.entries(patientFolders).map(([name, folder]) => ({
-        'Patient Name': name,
-        'Created Date': new Date(folder.created).toLocaleDateString(),
-        'Status': folder.data.status || '',
-        'UHID': folder.data.uhid || '',
-        'Mobile': folder.data.mobile || '',
-        'Insurance': folder.data.tpa || '',
-        'Total Bill': folder.data.totalBill || '',
-        'Approved': folder.data.finalApproved || ''
-    }));
-    
-    const ws = XLSX.utils.json_to_sheet(exportData);
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, 'Patient Folders');
-    XLSX.writeFile(wb, `Patient_Folders_${new Date().toISOString().slice(0,10)}.xlsx`);
-    
-    showNotification('✓ Patient folders exported to Excel!', 'success');
-}
-
-// Add export button click handler
-window.addEventListener('load', function() {
-    // You can add a button to export patient folders if needed
-    console.log('Patient Folder System Ready!');
-    console.log('Total folders:', Object.keys(JSON.parse(localStorage.getItem('patientFolders')) || {}).length);
-});
     </script>
 </body>
 </html>
