@@ -1263,11 +1263,17 @@
             return text;
         }
 
-        let claims = (JSON.parse(localStorage.getItem('claims')) || []).map(claim => ({
-            ...claim,
-            doa: normalizeDateForStorage(claim.doa),
-            dod: normalizeDateForStorage(claim.dod)
-        }));
+        let claims = (JSON.parse(localStorage.getItem('claims')) || []).map(claim => {
+            const paymentDateValue = claim.paymentDate ?? claim.payment_date ?? claim['Payment Date'] ?? claim['payment date'] ?? claim['payment/utr'] ?? claim['Payment/UTR'] ?? '';
+            const courierDateValue = claim.courierDate ?? claim.courier_date ?? claim['Courier Date'] ?? '';
+            return {
+                ...claim,
+                doa: normalizeDateForStorage(claim.doa),
+                dod: normalizeDateForStorage(claim.dod),
+                paymentDate: normalizeDateForStorage(paymentDateValue),
+                courierDate: normalizeDateForStorage(courierDateValue)
+            };
+        });
         localStorage.setItem('claims', JSON.stringify(claims));
         let editingIndex = -1;
         let selectedIndices = new Set();
@@ -2010,17 +2016,87 @@
             renderTable();
         }
         
+        function getClaimValueForField(claim, aliases) {
+            for (const alias of aliases) {
+                const value = claim?.[alias];
+                if (value !== undefined && value !== null && String(value).trim() !== '') {
+                    return value;
+                }
+            }
+            return '';
+        }
+
+        function populateClaimForm(claim) {
+            const form = document.getElementById('claimForm');
+            if (!form) return;
+
+            const fieldAliases = {
+                patientName: ['patientName', 'Patient Name', 'name'],
+                uhid: ['uhid', 'UHID'],
+                mobileNumber: ['mobileNumber', 'mobile', 'phone'],
+                insuranceLimit: ['insuranceLimit', 'Insurance Limit'],
+                ipdNo: ['ipdNo', 'IPD No'],
+                doa: ['doa', 'DOA', 'doaDate'],
+                dod: ['dod', 'DOD', 'dodDate'],
+                tpaName: ['tpaName', 'tpa', 'TPA/Ins. Name'],
+                insuranceCompany: ['insuranceCompany', 'Insurance Company', 'settlementSummary', 'Settlement Summary'],
+                insuranceID: ['insuranceID', 'insuranceIdNo', 'Insurance ID No', 'Insurance ID'],
+                claimNo: ['claimNo', 'Claim No'],
+                policyNumber: ['policyNumber', 'policyNo', 'Policy No'],
+                empID: ['empID', 'empIdNo', 'EMP ID No', 'EMP ID'],
+                billInvoiceNo: ['billInvoiceNo', 'Bill Invoice No'],
+                totalBill: ['totalBill', 'Total Bill'],
+                approved: ['approved', 'Approved'],
+                discount: ['discount', 'Discount'],
+                deduction: ['deduction', 'Deduction'],
+                patientPay: ['patientPay', 'Patient Pay'],
+                settlementAmount: ['settlementAmount', 'Settlement Amount'],
+                tds: ['tds', 'tdsAmount', 'TDS Amount'],
+                paymentDate: ['paymentDate', 'payment_date', 'Payment Date', 'payment date', 'payment/utr', 'Payment/UTR'],
+                utr: ['utr', 'UTR', 'utrno', 'payment_utr'],
+                attenderName: ['attenderName', 'Attender Name'],
+                relation: ['relation', 'Relation'],
+                insuranceAddress: ['insuranceAddress', 'Insurance Address', 'insuranceaddress'],
+                bankName: ['bankName', 'Bank Name', 'bank', 'Bank', 'bankname'],
+                bankAccountNo: ['bankAccountNo', 'Bank Account No.', 'Bank Account No', 'Bank Account Number', 'Account Number', 'bankaccountno', 'bankaccountnumber'],
+                ifscCode: ['ifscCode', 'IFSC Code', 'IFSC', 'ifsc'],
+                bankAddress: ['bankAddress', 'Bank Address', 'bankaddress'],
+                courierDetails: ['courierDetails', 'Courier Details'],
+                courierDate: ['courierDate', 'Courier Date', 'courier_date'],
+                diagnosis: ['diagnosis', 'Diagnosis'],
+                surgeryName: ['surgeryName', 'SurgeryName', 'Surgery Name'],
+                remark: ['remark', 'Remark'],
+                status: ['status', 'Status']
+            };
+
+            form.querySelectorAll('input, select, textarea').forEach((element) => {
+                const fieldName = element.name;
+                if (!fieldName) return;
+
+                const value = getClaimValueForField(claim, fieldAliases[fieldName] || [fieldName]);
+                let normalizedValue = value;
+
+                if (['doa', 'dod', 'paymentDate', 'courierDate'].includes(fieldName)) {
+                    normalizedValue = normalizeDateForStorage(value);
+                }
+
+                if (element.type === 'checkbox') {
+                    element.checked = Boolean(normalizedValue);
+                } else if (element.type === 'number') {
+                    element.value = normalizedValue ?? '';
+                } else {
+                    element.value = normalizedValue ?? '';
+                }
+            });
+        }
+
         function editClaim(index) {
             editingIndex = index;
             const claim = claims[index];
-            
-            // Populate form with claim data
-            Object.keys(claim).forEach(key => {
-                const input = document.querySelector(`[name="${key}"]`);
-                if (input) {
-                    input.value = claim[key];
-                }
-            });
+
+            if (claim) {
+                populateClaimForm(claim);
+            }
             
             setFormMode(true);
             openClaimForm(true);
@@ -2142,6 +2218,16 @@
             showAlert('Date filter cleared', 'success');
         }
         
+        function getClaimExportValue(claim, fieldName, header) {
+            if (fieldName === 'paymentDate') {
+                return claim.paymentDate || claim.payment_date || claim['Payment Date'] || claim['payment date'] || claim['payment/utr'] || claim['Payment/UTR'] || '';
+            }
+            if (fieldName === 'utr') {
+                return claim.utr || claim.UTR || claim.paymentUTR || claim.payment_utr || claim['UTR'] || claim['utr'] || '';
+            }
+            return claim[fieldName] || '';
+        }
+
         function exportFilteredData() {
             // Get filtered data based on date range
             let dataToExport = claims;
@@ -2250,7 +2336,8 @@
             dataToExport.forEach((claim, index) => {
                 const row = headers.map(header => {
                     const fieldName = fieldMap[header];
-                    const value = claim[fieldName] || '';
+                    const rawValue = getClaimExportValue(claim, fieldName, header);
+                    const value = (fieldName === 'doa' || fieldName === 'dod' || fieldName === 'paymentDate') ? formatDateForDisplay(rawValue) : rawValue;
                     // Escape quotes and wrap in quotes if contains comma
                     return value.toString().includes(',') ? `"${value.toString().replace(/"/g, '""')}"` : value;
                 });
@@ -2821,7 +2908,7 @@ ${letters}
                     <td>${claim.patientPay || '-'}</td>
                     <td>${claim.settlementAmount || '-'}</td>
                     <td>${claim.tds || '-'}</td>
-                    <td>${formatDateForDisplay(claim.paymentDate)}</td>
+                    <td>${formatDateForDisplay(claim.paymentDate || claim.payment_date || claim['Payment Date'] || claim['payment date'] || claim['payment/utr'] || claim['Payment/UTR'])}</td>
                     <td>${claim.utr || '-'}</td>
                     <td>${claim.attenderName || '-'}</td>
                     <td>${claim.relation || '-'}</td>
@@ -2877,7 +2964,13 @@ ${letters}
             'patient pay': 'patientPay',
             'settlement amount': 'settlementAmount',
             'tds amount': 'tds',
+            'payment date': 'paymentDate',
+            'paymentdate': 'paymentDate',
+            'payment_date': 'paymentDate',
             'payment/utr': 'paymentDate',
+            'payment utr': 'paymentDate',
+            'payment date/utr': 'paymentDate',
+            'paymentdate/utr': 'paymentDate',
             'attender name': 'attenderName',
             'relation': 'relation',
             'insurance address': 'insuranceAddress',
@@ -2987,6 +3080,8 @@ ${letters}
                         });
                         claim.doa = normalizeDateForStorage(claim.doa);
                         claim.dod = normalizeDateForStorage(claim.dod);
+                        claim.paymentDate = normalizeDateForStorage(claim.paymentDate ?? claim.payment_date ?? claim['Payment Date'] ?? claim['payment date'] ?? claim['payment/utr'] ?? claim['Payment/UTR'] ?? '');
+                        claim.courierDate = normalizeDateForStorage(claim.courierDate ?? claim.courier_date ?? claim['Courier Date'] ?? '');
                         
                         // Auto-generate Claim No if missing
                         if (!claim.claimNo || claim.claimNo.trim() === '') {
@@ -3077,6 +3172,8 @@ ${letters}
                         });
                         claim.doa = normalizeDateForStorage(claim.doa);
                         claim.dod = normalizeDateForStorage(claim.dod);
+                        claim.paymentDate = normalizeDateForStorage(claim.paymentDate ?? claim.payment_date ?? claim['Payment Date'] ?? claim['payment date'] ?? claim['payment/utr'] ?? claim['Payment/UTR'] ?? '');
+                        claim.courierDate = normalizeDateForStorage(claim.courierDate ?? claim.courier_date ?? claim['Courier Date'] ?? '');
                         
                         // Auto-generate Claim No if missing
                         if (!claim.claimNo || claim.claimNo.trim() === '') {
@@ -3203,7 +3300,8 @@ ${letters}
                 'Patient Pay',
                 'Settlement Amount',
                 'TDS Amount',
-                'Payment/UTR',
+                'Payment Date',
+                'UTR',
                 'Attender Name',
                 'Relation',
                 'Insurance Address',
@@ -3265,8 +3363,8 @@ ${letters}
             dataToExport.forEach((claim, index) => {
                 const row = headers.map(header => {
                     const fieldName = fieldMap[header];
-                    const rawValue = claim[fieldName] || '';
-                    const value = (fieldName === 'doa' || fieldName === 'dod') ? formatDateForDisplay(rawValue) : rawValue;
+                    const rawValue = getClaimExportValue(claim, fieldName, header);
+                    const value = (fieldName === 'doa' || fieldName === 'dod' || fieldName === 'paymentDate') ? formatDateForDisplay(rawValue) : rawValue;
                     // Escape quotes and wrap in quotes if contains comma
                     return value.toString().includes(',') ? `"${value.toString().replace(/"/g, '""')}"` : value;
                 });
