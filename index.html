@@ -3613,55 +3613,31 @@ ${letters}
         function populateFormForReAdmit(existingPatient) {
             console.log("[DEBUG] Populating form for re-admission from:", existingPatient);
 
-            // Define alias groups so we can treat related property names the same
-            const aliasGroups = [
-                ['finalapproved', 'approved', 'settlementamount'],
-                ['tds', 'tdsamount'],
-                ['paymentutr', 'utr', 'utrno', 'payment_utr'],
-                ['totalbill'],
-                ['ipdno'],
-                ['doa'],
-                ['dod'],
-                ['diagnosis'],
-                ['courierdetails', 'courierdetail'],
-                ['courierdate'],
-                ['surgeryname'],
-                ['remark'],
-                ['patientpay'],
-                ['discount'],
-                ['deduction']
+            // Normalize function for consistent comparison
+            const normalize = str => String(str || '').toLowerCase().trim().replace(/[^a-z0-9]/g, '');
+
+            // Define skip list (fields that should NOT be populated from existing patient)
+            const skipFields = [
+                'ipdno', 'doa', 'dod', 'diagnosis', 'totalbill', 'finalapproved',
+                'approved', 'settlementamount', 'discount', 'deduction', 'patientpay',
+                'tdsamount', 'tds', 'utr', 'paymentutr', 'courierdetails',
+                'courierdate', 'surgeryname', 'remark'
             ];
+            const skipSet = new Set(skipFields.map(f => normalize(f)));
 
-            const aliasMap = {};
-            const aliasesByCanon = {};
-            aliasGroups.forEach(group => {
-                const canon = group[0];
-                aliasesByCanon[canon] = group.slice();
-                group.forEach(a => aliasMap[a] = canon);
-            });
-
-            // Build skip set (canonical forms) from the user's skip list
-            const skipList = ['ipdNo', 'doa', 'dod', 'diagnosis', 'totalBill', 'finalApproved', 'discount', 'deduction', 'patientPay', 'settlementAmount', 'tdsAmount', 'utr', 'courierDetails', 'courierDate', 'surgeryName', 'remark'];
-            const normalize = str => String(str || '').toLowerCase().replace(/\s+/g, '').replace(/[^a-z0-9]/g, '');
-            const skipCanon = new Set();
-            skipList.forEach(s => {
-                const n = normalize(s);
-                skipCanon.add(aliasMap[n] || n);
-            });
-
-            // Populate by matching form element id or name to existingPatient properties,
-            // but skip any field that maps to a canonical skip name.
+            // Get form
             const form = document.getElementById('claimForm') || document.getElementById('patientForm') || document.querySelector('form');
             if (!form) return;
 
+            // Populate form fields
             Array.from(form.elements).forEach(el => {
                 const key = el.id || el.name;
                 if (!key) return;
-                const nKey = normalize(key);
-                const canonKey = aliasMap[nKey] || nKey;
 
-                // If this canonical key is in skip list, clear and continue
-                if (skipCanon.has(canonKey)) {
+                const nKey = normalize(key);
+
+                // If this field is in the skip list, clear it
+                if (skipSet.has(nKey)) {
                     if (el.type === 'checkbox' || el.type === 'radio') {
                         el.checked = false;
                     } else {
@@ -3670,44 +3646,63 @@ ${letters}
                     return;
                 }
 
-                // Try to find a matching property on existingPatient taking aliases into account
+                // Try to find matching property in existingPatient
                 let found = null;
-                const candidateAliases = (aliasesByCanon[canonKey] || []).concat([nKey]);
-                for (const pKey in existingPatient) {
-                    const nP = normalize(pKey);
-                    // direct match or alias match
-                    if (nP === nKey || candidateAliases.indexOf(nP) !== -1) {
-                        const pCanon = aliasMap[nP] || nP;
-                        if (skipCanon.has(pCanon)) {
-                            found = null; // explicit skip
+
+                // Direct property match
+                if (existingPatient[key] !== undefined) {
+                    found = existingPatient[key];
+                } else {
+                    // Try normalized matching
+                    for (const pKey in existingPatient) {
+                        if (normalize(pKey) === nKey) {
+                            found = existingPatient[pKey];
                             break;
                         }
-                        found = existingPatient[pKey];
-                        break;
                     }
-                }
-
-                // Fallback: if nothing found but existingPatient has a property with same raw key
-                if (found === null || found === undefined) {
-                    // Try exact property names
-                    if (existingPatient[key] !== undefined) found = existingPatient[key];
-                    else if (existingPatient[el.name] !== undefined) found = existingPatient[el.name];
-                    else if (existingPatient[el.id] !== undefined) found = existingPatient[el.id];
                 }
 
                 if (found === undefined || found === null) found = '';
 
-                if (el.type === 'checkbox') {
+                // Set field value
+                if (el.type === 'checkbox' || el.type === 'radio') {
                     el.checked = !!found;
+                } else if (el.tagName === 'SELECT') {
+                    el.value = found;
+                    if (!el.value && found) {
+                        // Try to find option by text
+                        Array.from(el.options).forEach(opt => {
+                            if (normalize(opt.text) === normalize(found)) {
+                                el.value = opt.value;
+                            }
+                        });
+                    }
                 } else {
                     el.value = found;
                 }
             });
 
-            const statusElement = document.getElementById('status');
+            // Set status to "Admitted" - handle both input and select elements
+            const statusElement = document.getElementById('status') || document.querySelector('[name="status"]');
             if (statusElement) {
-                statusElement.value = 'Admitted';
-                console.log('[DEBUG] Set Status to: Admitted');
+                if (statusElement.tagName === 'SELECT') {
+                    // For select element, set value
+                    statusElement.value = 'Admitted';
+                    // If value not found, try to find matching option
+                    if (statusElement.value !== 'Admitted') {
+                        Array.from(statusElement.options).forEach(opt => {
+                            if (normalize(opt.text) === normalize('admitted')) {
+                                statusElement.value = opt.value;
+                            }
+                        });
+                    }
+                } else {
+                    // For input element
+                    statusElement.value = 'Admitted';
+                }
+                console.log('[DEBUG] Status set to: ' + statusElement.value);
+            } else {
+                console.log('[DEBUG] Status element not found');
             }
 
             console.log('[DEBUG] Form populated. Financial, Diagnosis, Courier, Dates, and IPD fields left empty for user input');
