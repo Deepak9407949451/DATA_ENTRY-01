@@ -1274,7 +1274,7 @@
         let currentFilter = '';
         let dateFilterFrom = null;
         let dateFilterTo = null;
-        const GOOGLE_SHEETS_SYNC_URL = "https://script.google.com/macros/s/AKfycbyLqBfr0jLPlUgDkPrQV66sWZogiepYBhXLqjYX-aELSbRSr72SSvTqt5n4SRznD9I4/exec";
+        const GOOGLE_SHEETS_SYNC_URL = "https://script.google.com/macros/s/AKfycbx9rM25HYqLPjtW5DPSpKV9FCAs21LEQ1S8bRuAGUu9v0qWBoPxP4WvWb7s0VBAjyxy/exec";
         const GOOGLE_SHEETS_LOAD_URL = "https://script.google.com/macros/s/AKfycbyHW6fnVyV6ujL7fWwUTXWHS4BOoPho6SoF0zAVcj4yEztR9MBjcAonGLf_h8mUG4LaVw/exec"
         function syncToGoogleSheet(isManual = true) {
             const url = GOOGLE_SHEETS_SYNC_URL;
@@ -1308,7 +1308,8 @@
                     patientPay: p.patientPay || '',
                     settlementAmount: p.settlementAmount || '',
                     tdsAmount: p.tds || p.tdsAmount || '',
-                    paymentUtr: p.paymentUTR || `${p.paymentDate || '-'} ${p.utr || '-'}`,
+                    paymentDate: formatDateForDisplay(p.paymentDate || ''),
+                    utr: p.utr || p.paymentUTR || '',
                     attenderName: p.attenderName || p.contact || '-',
                     relation: p.relation || '-',
                     insuranceAddress: p.insuranceAddress || '-',
@@ -3241,7 +3242,8 @@ ${letters}
                 'Patient Pay': 'patientPay',
                 'Settlement Amount': 'settlementAmount',
                 'TDS Amount': 'tds',
-                'Payment/UTR': 'paymentDate',
+                'Payment Date': 'paymentDate',
+                'UTR': 'utr',
                 'Attender Name': 'attenderName',
                 'Relation': 'relation',
                 'Insurance Address': 'insuranceAddress',
