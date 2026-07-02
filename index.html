@@ -3546,24 +3546,14 @@ ${letters}
                     e.target.checked = false;
                     return;
                 }
-                const proceed = confirm('Existing patient found. Create re-admission record now?');
+                const proceed = confirm('Existing patient found. Populate form with existing patient data?');
                 if (!proceed) { e.target.checked = false; return; }
 
-                // create new claim from existing
-                const newClaim = Object.assign({}, existing);
-                newClaim.claimNo = generateClaimNo();
-                // copy dates if provided
-                ['doa','dod','ipdNo','billInvoiceNo','status'].forEach(k => { if (tmp[k]) newClaim[k] = tmp[k]; });
-                if (uhidInput) newClaim.uhid = uhidInput;
-                if (mobileInput) {
-                    if (existing.mobileNumber !== undefined) newClaim.mobileNumber = mobileInput; else newClaim.mobile = mobileInput;
-                }
-                claims.push(newClaim);
-                localStorage.setItem('claims', JSON.stringify(claims));
-                showAlert('Re-admission created (new serial).', 'success');
-                form.reset();
+                // Populate form with existing patient data for re-admission
+                populateFormForReAdmit(existing);
+                
+                showAlert('Patient data loaded. Review and update admission details, then submit.', 'success');
                 e.target.checked = false;
-                renderTable();
             });
         }
 
@@ -3621,13 +3611,16 @@ ${letters}
                 'ipdno', 'doa', 'dod', 'diagnosis', 'totalbill', 'finalapproved',
                 'approved', 'settlementamount', 'discount', 'deduction', 'patientpay',
                 'tdsamount', 'tds', 'utr', 'paymentutr', 'courierdetails',
-                'courierdate', 'surgeryname', 'remark'
+                'courierdate', 'surgeryname', 'remark', 'claimno'
             ];
             const skipSet = new Set(skipFields.map(f => normalize(f)));
 
             // Get form
             const form = document.getElementById('claimForm') || document.getElementById('patientForm') || document.querySelector('form');
-            if (!form) return;
+            if (!form) {
+                console.log('[DEBUG] Form not found');
+                return;
+            }
 
             // Populate form fields
             Array.from(form.elements).forEach(el => {
@@ -3643,6 +3636,7 @@ ${letters}
                     } else {
                         el.value = '';
                     }
+                    console.log(`[DEBUG] Skipped field: ${key}`);
                     return;
                 }
 
@@ -3667,6 +3661,7 @@ ${letters}
                 // Set field value
                 if (el.type === 'checkbox' || el.type === 'radio') {
                     el.checked = !!found;
+                    console.log(`[DEBUG] Set ${key} (checkbox) to: ${!!found}`);
                 } else if (el.tagName === 'SELECT') {
                     el.value = found;
                     if (!el.value && found) {
@@ -3677,35 +3672,47 @@ ${letters}
                             }
                         });
                     }
+                    console.log(`[DEBUG] Set ${key} (select) to: ${el.value}`);
                 } else {
                     el.value = found;
+                    console.log(`[DEBUG] Set ${key} to: ${found}`);
+                }
+
+                // Trigger change event if available
+                if (typeof el.dispatchEvent === 'function') {
+                    el.dispatchEvent(new Event('change', { bubbles: true }));
                 }
             });
 
             // Set status to "Admitted" - handle both input and select elements
-            const statusElement = document.getElementById('status') || document.querySelector('[name="status"]');
+            const statusElement = document.querySelector('select[name="status"]') || document.getElementById('status') || document.querySelector('[name="status"]');
             if (statusElement) {
                 if (statusElement.tagName === 'SELECT') {
-                    // For select element, set value
-                    statusElement.value = 'Admitted';
-                    // If value not found, try to find matching option
-                    if (statusElement.value !== 'Admitted') {
-                        Array.from(statusElement.options).forEach(opt => {
-                            if (normalize(opt.text) === normalize('admitted')) {
-                                statusElement.value = opt.value;
-                            }
-                        });
+                    // For select element, find and set the Admitted option
+                    let found = false;
+                    Array.from(statusElement.options).forEach(opt => {
+                        if (opt.value === 'Admitted' || normalize(opt.text) === normalize('admitted')) {
+                            statusElement.value = opt.value;
+                            found = true;
+                        }
+                    });
+                    if (!found) {
+                        statusElement.value = 'Admitted';
                     }
                 } else {
                     // For input element
                     statusElement.value = 'Admitted';
                 }
                 console.log('[DEBUG] Status set to: ' + statusElement.value);
+                // Trigger change event
+                if (typeof statusElement.dispatchEvent === 'function') {
+                    statusElement.dispatchEvent(new Event('change', { bubbles: true }));
+                }
             } else {
                 console.log('[DEBUG] Status element not found');
             }
 
-            console.log('[DEBUG] Form populated. Financial, Diagnosis, Courier, Dates, and IPD fields left empty for user input');
+            console.log('[DEBUG] Form populated successfully');
         }
 
         // Helper: build patient object from form (only if not provided elsewhere)
