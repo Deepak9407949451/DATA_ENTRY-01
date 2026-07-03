@@ -2700,8 +2700,11 @@ ${letters}
             const today = new Date();
             const headerDate = `${String(today.getDate()).padStart(2, '0')}-${String(today.getMonth() + 1).padStart(2, '0')}-${today.getFullYear()}`;
             const totalBillNumeric = parseFloat(String(totalBill).replace(/[^0-9.-]/g, '')) || 0;
+            const approvedAmount = row.approved || row.settlementAmount || '0.00';
+            const approvedAmountNumeric = parseFloat(String(approvedAmount).replace(/[^0-9.-]/g, '')) || 0;
             const patientPayNumeric = parseFloat(String(patientPay).replace(/[^0-9.-]/g, '')) || 0;
             const totalBillWords = totalBillNumeric === 0 ? 'Zero Rupees' : (totalBillNumeric ? `${numToIndianWords(Math.floor(totalBillNumeric))} Only` : '[Insert Amount in Words]');
+            const approvedAmountWords = approvedAmountNumeric === 0 ? 'Zero Rupees' : (approvedAmountNumeric ? `${numToIndianWords(Math.floor(approvedAmountNumeric))} Only` : '[Insert Amount in Words]');
             const patientPayWords = patientPayNumeric === 0 ? 'Zero Rupees' : (patientPayNumeric ? `${numToIndianWords(Math.floor(patientPayNumeric))} Only` : '[Insert Amount in Words]');
 
             return `<div class="letter-container">
@@ -2783,8 +2786,9 @@ ${letters}
                 </tr>
                 <tr>
                     <td class="label-cell"><strong>Total Amount Due:</strong></td>
-                    <td class="value-cell amount-highlight"><strong>₹ ${escapeHtml(approvedAmount)} (${escapeHtml(approvedAmountWords)})</strong></td>
+                     <td class="value-cell amount-highlight"><strong>₹ ${escapeHtml(approvedAmount)} (${escapeHtml(approvedAmountWords)})</strong></td>
                 </tr>
+                <tr>
                 <tr>
                     <td class="label-cell"><strong>Amount Paid by Patient:</strong></td>
                     <td class="value-cell amount-highlight">₹ ${escapeHtml(patientPay)} (${escapeHtml(patientPayWords)})</td>
