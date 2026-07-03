@@ -2517,8 +2517,8 @@ Hospital Administration - TPA Desk.`;
             display: flex;
             align-items: center;
             justify-content: space-between;
-            gap: 16px;
-            padding-bottom: 12px;
+            gap: 14px;
+            padding-bottom: 10px;
             border-bottom: 1px solid #d1d5db;
             margin-bottom: 16px;
         }
@@ -2546,6 +2546,7 @@ Hospital Administration - TPA Desk.`;
         }
         .hospital-image-right {
             order: 3;
+            
         }
         .letterhead-center h1 {
             font-size: 16px;
@@ -2555,7 +2556,7 @@ Hospital Administration - TPA Desk.`;
             text-transform: uppercase;
         }
         .letterhead-center p {
-            margin: 2px 0;
+            margin: 1px 0;
             font-size: 12px;
             color: #374151;
         }
@@ -2563,12 +2564,12 @@ Hospital Administration - TPA Desk.`;
             text-align: right;
             font-weight: bold;
             color: #4b5563;
-            font-size: 13px;
+            font-size: 15px;
         }
         .address-section {
-            margin-top: 5px;
+            margin-top: 4px;
             color: #1f2937;
-            font-size: 13px;
+            font-size: 11px;
         }
         .subject {
             font-weight: bold;
@@ -2624,10 +2625,14 @@ Hospital Administration - TPA Desk.`;
         }
         .amount-highlight {
             color: #b91c1c;
+            font-size: 12px;
+            font-weight: bold;
         }
         .signature {
-            margin-top: 20px;
-            font-size: 13px;
+            text-align: right;
+            text-transform: uppercase;
+            margin-top: 10px;
+            font-size: 12px;
         }
         @media print {
             body {
@@ -2649,11 +2654,16 @@ Hospital Administration - TPA Desk.`;
                 print-color-adjust: exact;
                 -webkit-print-color-adjust: exact;
             }
-            .master-table .category-row {
-                background-color: #eff6ff !important;
-                color: #1e40af !important;
+            .master-table .category-row,
+            .master-table .category-row td {
+                background-color: #1e3a8a !important;
+                color: #ffffff !important;
                 print-color-adjust: exact;
                 -webkit-print-color-adjust: exact;
+            }
+            .amount-highlight {
+                font-size: 12px !important;
+                font-weight: bold !important;
             }
             @page {
                 size: A4;
@@ -2715,14 +2725,14 @@ ${letters}
             <strong>${escapeHtml(companyName)}</strong><br>
             <strong>${escapeHtml(insuranceAddress)}</strong><br>
             ${escapeHtml(addressCityLine)}
-        </div>        
+        </div>
         <p>Dear Sir/Madam,</p>
         <p>This is to bring to your kind attention that we have enclosed a claim document/s of your member who have availed cashless treatment based on your approval.Kindly send us payment for an amount in favour of "Arpa Medcity Hospital & Research Institute Bilaspur.</p>
         <table class="master-table">
             <thead>
                 <tr>
                     <th>Parameter Fields</th>
-                    <th>Corresponding Details / Information</th>
+                    <th> PATIENT DETAILS / INFORMATION </th>
                 </tr>
             </thead>
             <tbody>
@@ -2803,9 +2813,9 @@ ${letters}
         <p><strong>ENCLOSED DOCUMENTS: 1. Original Bill 2. Authorization 3. Discharge summary & Investigation & ID Proof & Implants.</strong></p>
     </div>
     <div>
-        <p>Thanking you.</p>
+        <p>Thanking you.Yours sincerely</p>
         <div class="signature">
-            Yours sincerely,<br><br><br>
+            <br><br><br>
             ___________________________<br>
             <strong>Deepak Shriwas</strong><br>
             Contact Number: 9009446861
