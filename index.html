@@ -475,7 +475,122 @@
         .btn-export:hover {
             background: #0056b3;
         }
-        
+
+        .column-picker {
+            position: relative;
+            display: inline-block;
+        }
+
+        .column-picker-panel {
+            display: none;
+            position: absolute;
+            top: 42px;
+            left: 0;
+            width: 300px;
+            max-height: 320px;
+            overflow-y: auto;
+            background: white;
+            border: 1px solid #d3dae3;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+            padding: 12px;
+            z-index: 20;
+        }
+
+        .column-picker-panel.open {
+            display: block;
+        }
+
+        .column-picker-option {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            margin-bottom: 8px;
+        }
+
+        .column-picker-option label {
+            font-size: 13px;
+            color: #333;
+            flex: 1;
+        }
+
+        .column-picker-option input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            accent-color: #667eea;
+        }
+
+        .column-picker-panel button {
+            width: 100%;
+            margin-top: 10px;
+            border-radius: 6px;
+            font-size: 13px;
+            padding: 10px 12px;
+        }
+
+        .pagination-controls {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+            margin-top: 14px;
+            padding: 12px 14px;
+            background: #f7f8fc;
+            border: 1px solid #e0e4eb;
+            border-radius: 10px;
+        }
+
+        .pagination-size {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            color: #333;
+        }
+
+        .pagination-size button {
+            border: 1px solid #d3dae3;
+            background: white;
+            color: #333;
+            padding: 6px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            min-width: 44px;
+        }
+
+        .pagination-size button.active,
+        .pagination-size button:hover {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .pagination-info {
+            font-size: 13px;
+            color: #555;
+        }
+
+        .pagination-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .pagination-buttons button {
+            border: 1px solid #d3dae3;
+            background: white;
+            color: #333;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .pagination-buttons button:disabled {
+            opacity: 0.5;
+            cursor: default;
+        }
+
         .dashboard-section {
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
             padding: 30px;
@@ -898,21 +1013,21 @@
         }
 
         .icon-btn.delete {
-            color: #dc3545;
-            background: rgba(220, 53, 69, 0.1);
+            color: white;
+            background: #dc3545;
         }
 
         .icon-btn.delete:hover {
-            background: rgba(220, 53, 69, 0.2);
+            background: #fa051d;
         }
 
         .icon-btn.whatsapp {
-            color: #25D366;
-            background: rgba(37, 211, 102, 0.1);
+            color: white;
+            background: #25D366;
         }
 
         .icon-btn.whatsapp:hover {
-            background: rgba(37, 211, 102, 0.2);
+            background: #1ea952;
         }
 
         @media (max-width: 768px) {
@@ -1418,6 +1533,10 @@
                 <h2>Claims Records</h2>
                 <div style="margin-bottom: 20px; display: flex; gap: 10px; flex-wrap: wrap; align-items: center;">
                     <input type="text" id="searchBox" placeholder="🔍 Search all fields..." style="flex: 1; min-width: 240px; padding: 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px;">
+                    <div class="column-picker">
+                        <button type="button" class="btn-secondary" id="columnPickerButton">Columns ▾</button>
+                        <div class="column-picker-panel" id="columnPickerPanel"></div>
+                    </div>
                     <button type="button" class="btn-primary" onclick="openClaimForm()">+ Add Claim</button>
                     <button type="button" class="btn-secondary cover-letter-btn" onclick="generateCoverLetter()">📄 Cover Letter</button>
                     <button id="deleteSelectedBtn" class="btn-danger" style="padding: 12px 20px; background: #dc3545; display: none;" onclick="deleteSelected()">🗑️ Delete Selected</button>
@@ -1426,44 +1545,44 @@
                     <table id="claimsTable">
                         <thead>
                             <tr>
-                                <th style="width: 200px;"><input type="checkbox" id="selectAllCheckbox" onchange="selectAll(this)"> Action</th>
-                                <th>S.No</th>
-                                <th>Patient Details</th>
-                                <th>UHID</th>
-                                <th>Mobile Number</th>
-                                <th>Insurance Limit</th>
-                                <th>IPD No</th>
-                                <th>DOA</th>
-                                <th>DOD</th>
-                                <th>TPA/Ins. Name</th>
-                                <th>Insurance Company</th>
-                                <th>Insurance ID</th>
-                                <th>Claim No</th>
-                                <th>Policy No</th>
-                                <th>EMP ID</th>
-                                <th>Bill Invoice No</th>
-                                <th>Total Bill</th>
-                                <th>Approved</th>
-                                <th>Discount</th>
-                                <th>Deduction</th>
-                                <th>Patient Pay</th>
-                                <th>Settlement Amount</th>
-                                <th>TDS Amount</th>
-                                <th>Payment Date</th>
-                                <th>UTR</th>
-                                <th>Attender Name</th>
-                                <th>Relation</th>
-                                <th>Insurance Address</th>
-                                <th>Bank Name</th>
-                                <th>Bank Account No</th>
-                                <th>IFSC Code</th>
-                                <th>Bank Address</th>
-                                <th>Courier Details</th>
-                                <th>Courier Date</th>
-                                <th>Diagnosis</th>
-                                <th>Surgery Name</th>
-                                <th>Remark</th>
-                                <th>Status</th>
+                                <th style="width: 200px;" data-col="action"><input type="checkbox" id="selectAllCheckbox" onchange="selectAll(this)"> Action</th>
+                                <th data-col="sNo">S.No</th>
+                                <th data-col="patientName">Patient Details</th>
+                                <th data-col="uhid">UHID</th>
+                                <th data-col="mobileNumber">Mobile Number</th>
+                                <th data-col="insuranceLimit">Insurance Limit</th>
+                                <th data-col="ipdNo">IPD No</th>
+                                <th data-col="doa">DOA</th>
+                                <th data-col="dod">DOD</th>
+                                <th data-col="tpaName">TPA/Ins. Name</th>
+                                <th data-col="insuranceCompany">Insurance Company</th>
+                                <th data-col="insuranceID">Insurance ID</th>
+                                <th data-col="claimNo">Claim No</th>
+                                <th data-col="policyNumber">Policy No</th>
+                                <th data-col="empID">EMP ID</th>
+                                <th data-col="billInvoiceNo">Bill Invoice No</th>
+                                <th data-col="totalBill">Total Bill</th>
+                                <th data-col="approved">Approved</th>
+                                <th data-col="discount">Discount</th>
+                                <th data-col="deduction">Deduction</th>
+                                <th data-col="patientPay">Patient Pay</th>
+                                <th data-col="settlementAmount">Settlement Amount</th>
+                                <th data-col="tds">TDS Amount</th>
+                                <th data-col="paymentDate">Payment Date</th>
+                                <th data-col="utr">UTR</th>
+                                <th data-col="attenderName">Attender Name</th>
+                                <th data-col="relation">Relation</th>
+                                <th data-col="insuranceAddress">Insurance Address</th>
+                                <th data-col="bankName">Bank Name</th>
+                                <th data-col="bankAccountNo">Bank Account No</th>
+                                <th data-col="ifscCode">IFSC Code</th>
+                                <th data-col="bankAddress">Bank Address</th>
+                                <th data-col="courierDetails">Courier Details</th>
+                                <th data-col="courierDate">Courier Date</th>
+                                <th data-col="diagnosis">Diagnosis</th>
+                                <th data-col="surgeryName">Surgery Name</th>
+                                <th data-col="remark">Remark</th>
+                                <th data-col="status">Status</th>
                             </tr>
                         </thead>
                         <tbody id="tableBody">
@@ -1473,6 +1592,7 @@
                         </tbody>
                     </table>
                 </div>
+                <div class="pagination-controls" id="paginationControls"></div>
             </div>
         </div>
     </div>
@@ -2014,6 +2134,52 @@
             };
         });
         localStorage.setItem('claims', JSON.stringify(claims));
+
+        const ALL_COLUMNS = [
+            { key: 'action', label: 'Action' },
+            { key: 'sNo', label: 'S.No' },
+            { key: 'patientName', label: 'Patient Details' },
+            { key: 'uhid', label: 'UHID' },
+            { key: 'mobileNumber', label: 'Mobile Number' },
+            { key: 'insuranceLimit', label: 'Insurance Limit' },
+            { key: 'ipdNo', label: 'IPD No' },
+            { key: 'doa', label: 'DOA' },
+            { key: 'dod', label: 'DOD' },
+            { key: 'tpaName', label: 'TPA/Ins. Name' },
+            { key: 'insuranceCompany', label: 'Insurance Company' },
+            { key: 'insuranceID', label: 'Insurance ID' },
+            { key: 'claimNo', label: 'Claim No' },
+            { key: 'policyNumber', label: 'Policy No' },
+            { key: 'empID', label: 'EMP ID' },
+            { key: 'billInvoiceNo', label: 'Bill Invoice No' },
+            { key: 'totalBill', label: 'Total Bill' },
+            { key: 'approved', label: 'Approved' },
+            { key: 'discount', label: 'Discount' },
+            { key: 'deduction', label: 'Deduction' },
+            { key: 'patientPay', label: 'Patient Pay' },
+            { key: 'settlementAmount', label: 'Settlement Amount' },
+            { key: 'tds', label: 'TDS Amount' },
+            { key: 'paymentDate', label: 'Payment Date' },
+            { key: 'utr', label: 'UTR' },
+            { key: 'attenderName', label: 'Attender Name' },
+            { key: 'relation', label: 'Relation' },
+            { key: 'insuranceAddress', label: 'Insurance Address' },
+            { key: 'bankName', label: 'Bank Name' },
+            { key: 'bankAccountNo', label: 'Bank Account No' },
+            { key: 'ifscCode', label: 'IFSC Code' },
+            { key: 'bankAddress', label: 'Bank Address' },
+            { key: 'courierDetails', label: 'Courier Details' },
+            { key: 'courierDate', label: 'Courier Date' },
+            { key: 'diagnosis', label: 'Diagnosis' },
+            { key: 'surgeryName', label: 'Surgery Name' },
+            { key: 'remark', label: 'Remark' },
+            { key: 'status', label: 'Status' }
+        ];
+
+        let visibleColumns = new Set(ALL_COLUMNS.map(col => col.key));
+        const PAGE_SIZES = [10, 25, 50, 100];
+        let currentPage = 1;
+        let pageSize = 25;
         let editingIndex = -1;
         let currentDetailsIndex = -1;
         let selectedIndices = new Set();
@@ -3720,69 +3886,167 @@ ${letters}
             const tableBody = document.getElementById('tableBody');
             const claimsToRender = filteredClaims || claims;
             
+            const totalItems = claimsToRender.length;
+            const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
+            currentPage = Math.min(currentPage, totalPages);
+            const pageStart = (currentPage - 1) * pageSize;
+            const pageEnd = currentPage * pageSize;
+            const paginatedClaims = claimsToRender.slice(pageStart, pageEnd);
+
             if (claimsToRender.length === 0) {
-                tableBody.innerHTML = '<tr class="no-data"><td colspan="39">No claims found.</td></tr>';
+                const colspan = Math.max(visibleColumns.size, 1);
+                tableBody.innerHTML = `<tr class="no-data"><td colspan="${colspan}">No claims found.</td></tr>`;
+                updatePaginationControls(0, 1);
                 return;
             }
             
             updateDashboard();
             updateDeleteButton();
             
-            tableBody.innerHTML = claimsToRender.map((claim, displayIndex) => {
+            const includeColumn = key => visibleColumns.has(key);
+            const renderCell = (key, content) => includeColumn(key) ? `<td>${content}</td>` : '';
+            
+            tableBody.innerHTML = paginatedClaims.map((claim, displayIndex) => {
                 const actualIndex = claims.indexOf(claim);
                 const isChecked = selectedIndices.has(actualIndex);
                 return `
                 <tr>
-                        <td>
+                        ${renderCell('action', `
                             <div class="action-icons">
                                 <input type="checkbox" onchange="toggleSelect(${actualIndex}, this)" ${isChecked ? 'checked' : ''}>
-                                <button class="icon-btn view" title="View" onclick="showDetails(${actualIndex})">👁️</button>
+                                <button class="icon-btn view" title="View" onclick="showDetails(${actualIndex})"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="none"><circle cx="12" cy="12" r="11" fill="#C4A57B"/><circle cx="12" cy="12" r="9.5" fill="#003DA5"/><circle cx="12" cy="12" r="7.5" fill="white"/><circle cx="12" cy="12" r="5.5" fill="#00B4D8"/><circle cx="12" cy="12" r="3" fill="black"/></svg></button>
                                 <button class="icon-btn edit" title="Edit" onclick="editClaim(${actualIndex})">✎</button>
-                                <button class="icon-btn delete" title="Delete" onclick="deleteClaim(${actualIndex})">✕</button>
-                                <button class="icon-btn whatsapp" title="WhatsApp" onclick="sendWhatsAppByIndex(${actualIndex})">💬</button>
+                                <button class="icon-btn delete" title="Delete" onclick="deleteClaim(${actualIndex})"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg></button>
+                                <button class="icon-btn whatsapp" title="WhatsApp" onclick="sendWhatsAppByIndex(${actualIndex})"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.031-.967-.273-.099-.472-.149-.671.149-.198.297-.768.967-.941 1.166-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.149-.174.199-.298.298-.497.099-.2.05-.372-.025-.521-.075-.149-.671-1.61-.92-2.206-.242-.579-.487-.5-.671-.509-.174-.008-.372-.01-.571-.01-.198 0-.521.074-.792.372-.271.298-1.033 1.008-1.033 2.459 0 1.451 1.058 2.855 1.205 3.054.147.198 2.084 3.18 5.055 4.464.705.304 1.255.485 1.684.618.708.225 1.352.193 1.863.118.569-.085 1.758-.719 2.007-1.414.249-.695.249-1.287.174-1.414-.075-.127-.273-.198-.57-.347m-5.38 7.148a9.066 9.066 0 0 1-4.6-1.25A10.56 10.56 0 0 1 3.5 12.18C3.5 7.03 7.53 3 12.68 3c2.94 0 5.69 1.15 7.76 3.23A10.55 10.55 0 0 1 23.5 12.18c0 5.15-4.03 9.18-9.18 9.18M12.68 1.5C6.43 1.5 1.5 6.43 1.5 12.68c0 2.2.6 4.32 1.74 6.16L1.5 22.5l3.8-1.7A10.88 10.88 0 0 0 12.68 23.87c6.25 0 11.18-4.93 11.18-11.18C23.87 6.43 18.94 1.5 12.68 1.5"></path></svg></button>
                             </div>
-                        </td>
-                    <td>${displayIndex + 1}</td>
-                    <td>${claim.patientName || '-'}</td>
-                    <td>${claim.uhid || '-'}</td>
-                    <td>${claim.mobileNumber || '-'}</td>
-                    <td>${claim.insuranceLimit || '-'}</td>
-                    <td>${claim.ipdNo || '-'}</td>
-                    <td>${formatDateForDisplay(claim.doa)}</td>
-                    <td>${formatDateForDisplay(claim.dod)}</td>
-                    <td>${claim.tpaName || '-'}</td>
-                    <td>${claim.insuranceCompany || '-'}</td>
-                    <td>${claim.insuranceID || '-'}</td>
-                    <td>${claim.claimNo || '-'}</td>
-                    <td>${claim.policyNumber || '-'}</td>
-                    <td>${claim.empID || '-'}</td>
-                    <td>${claim.billInvoiceNo || '-'}</td>
-                    <td>${claim.totalBill || '-'}</td>
-                    <td>${claim.approved || '-'}</td>
-                    <td>${claim.discount || '-'}</td>
-                    <td>${claim.deduction || '-'}</td>
-                    <td>${claim.patientPay || '-'}</td>
-                    <td>${claim.settlementAmount || '-'}</td>
-                    <td>${claim.tds || '-'}</td>
-                    <td>${formatDateForDisplay(claim.paymentDate || claim.payment_date || claim['Payment Date'] || claim['payment date'] || claim['payment/utr'] || claim['Payment/UTR'])}</td>
-                    <td>${claim.utr || '-'}</td>
-                    <td>${claim.attenderName || '-'}</td>
-                    <td>${claim.relation || '-'}</td>
-                    <td>${claim.insuranceAddress || '-'}</td>
-                    <td>${claim.bankName || '-'}</td>
-                    <td>${claim.bankAccountNo || '-'}</td>
-                    <td>${claim.ifscCode || '-'}</td>
-                    <td>${claim.bankAddress || '-'}</td>
-                    <td>${claim.courierDetails || '-'}</td>
-                    <td>${claim.courierDate || '-'}</td>
-                    <td>${claim.diagnosis || '-'}</td>
-                    <td>${claim.surgeryName || '-'}</td>
-                    <td>${claim.remark || '-'}</td>
-                    <td><span style="padding: 4px 8px; border-radius: 3px; background: ${getStatusColor(claim.status)}; color: white; font-size: 11px;">${claim.status || '-'}</span></td>
-                </tr>
+                        `)}
+                        ${renderCell('sNo', pageStart + displayIndex + 1)}
+                        ${renderCell('patientName', claim.patientName || '-')}
+                        ${renderCell('uhid', claim.uhid || '-')}
+                        ${renderCell('mobileNumber', claim.mobileNumber || '-')}
+                        ${renderCell('insuranceLimit', claim.insuranceLimit || '-')}
+                        ${renderCell('ipdNo', claim.ipdNo || '-')}
+                        ${renderCell('doa', formatDateForDisplay(claim.doa))}
+                        ${renderCell('dod', formatDateForDisplay(claim.dod))}
+                        ${renderCell('tpaName', claim.tpaName || '-')}
+                        ${renderCell('insuranceCompany', claim.insuranceCompany || '-')}
+                        ${renderCell('insuranceID', claim.insuranceID || '-')}
+                        ${renderCell('claimNo', claim.claimNo || '-')}
+                        ${renderCell('policyNumber', claim.policyNumber || '-')}
+                        ${renderCell('empID', claim.empID || '-')}
+                        ${renderCell('billInvoiceNo', claim.billInvoiceNo || '-')}
+                        ${renderCell('totalBill', claim.totalBill || '-')}
+                        ${renderCell('approved', claim.approved || '-')}
+                        ${renderCell('discount', claim.discount || '-')}
+                        ${renderCell('deduction', claim.deduction || '-')}
+                        ${renderCell('patientPay', claim.patientPay || '-')}
+                        ${renderCell('settlementAmount', claim.settlementAmount || '-')}
+                        ${renderCell('tds', claim.tds || '-')}
+                        ${renderCell('paymentDate', formatDateForDisplay(claim.paymentDate || claim.payment_date || claim['Payment Date'] || claim['payment date'] || claim['payment/utr'] || claim['Payment/UTR']))}
+                        ${renderCell('utr', claim.utr || '-')}
+                        ${renderCell('attenderName', claim.attenderName || '-')}
+                        ${renderCell('relation', claim.relation || '-')}
+                        ${renderCell('insuranceAddress', claim.insuranceAddress || '-')}
+                        ${renderCell('bankName', claim.bankName || '-')}
+                        ${renderCell('bankAccountNo', claim.bankAccountNo || '-')}
+                        ${renderCell('ifscCode', claim.ifscCode || '-')}
+                        ${renderCell('bankAddress', claim.bankAddress || '-')}
+                        ${renderCell('courierDetails', claim.courierDetails || '-')}
+                        ${renderCell('courierDate', claim.courierDate || '-')}
+                        ${renderCell('diagnosis', claim.diagnosis || '-')}
+                        ${renderCell('surgeryName', claim.surgeryName || '-')}
+                        ${renderCell('remark', claim.remark || '-')}
+                        ${renderCell('status', `<span style="padding: 4px 8px; border-radius: 3px; background: ${getStatusColor(claim.status)}; color: white; font-size: 11px;">${claim.status || '-'}</span>`)}
+                    </tr>
             `}).join('');
+            updateHeaderVisibility();
+            updatePaginationControls(totalItems, totalPages);
         }
-        
+
+        function updateHeaderVisibility() {
+            const headers = document.querySelectorAll('#claimsTable thead th');
+            headers.forEach(header => {
+                const colKey = header.getAttribute('data-col');
+                if (!colKey) return;
+                header.style.display = visibleColumns.has(colKey) ? '' : 'none';
+            });
+        }
+
+        function updatePaginationControls(totalItems, totalPages) {
+            const paginationControls = document.getElementById('paginationControls');
+            if (!paginationControls) return;
+            paginationControls.innerHTML = `
+                <div class="pagination-size">Show per page:
+                    ${PAGE_SIZES.map(size => `<button type="button" class="${pageSize === size ? 'active' : ''}" onclick="setPageSize(${size})">${size}</button>`).join('')}
+                </div>
+                <div class="pagination-info">${totalItems > 0 ? `Showing ${Math.min(totalItems, (currentPage - 1) * pageSize + 1)} to ${Math.min(totalItems, currentPage * pageSize)} of ${totalItems}` : 'No records to show'}</div>
+                <div class="pagination-buttons">${totalPages > 1 ? `<button type="button" onclick="goToPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>Prev</button><button type="button" onclick="goToPage(${currentPage + 1})" ${currentPage === totalPages ? 'disabled' : ''}>Next</button>` : ''}</div>
+            `;
+        }
+
+        function setPageSize(size) {
+            if (!PAGE_SIZES.includes(size)) return;
+            pageSize = size;
+            currentPage = 1;
+            renderTable();
+        }
+
+        function goToPage(page) {
+            currentPage = Math.max(1, page);
+            renderTable();
+        }
+
+        function initializeColumnPicker() {
+            const picker = document.getElementById('columnPickerPanel');
+            const button = document.getElementById('columnPickerButton');
+            if (!picker || !button) return;
+
+            const renderOptions = () => {
+                picker.innerHTML = ALL_COLUMNS.map(column => `
+                    <div class="column-picker-option">
+                        <label for="col_${column.key}">${column.label}</label>
+                        <input type="checkbox" id="col_${column.key}" data-col="${column.key}" ${visibleColumns.has(column.key) ? 'checked' : ''}>
+                    </div>
+                `).join('');
+                picker.innerHTML += `
+                    <button type="button" class="btn-secondary" id="columnResetButton">Reset Columns</button>
+                `;
+                picker.querySelectorAll('input[type="checkbox"]').forEach(checkbox => {
+                    checkbox.addEventListener('change', (event) => {
+                        const key = event.target.getAttribute('data-col');
+                        if (!key) return;
+                        if (event.target.checked) {
+                            visibleColumns.add(key);
+                        } else {
+                            visibleColumns.delete(key);
+                        }
+                        renderTable();
+                    });
+                });
+                const resetButton = document.getElementById('columnResetButton');
+                if (resetButton) {
+                    resetButton.addEventListener('click', () => {
+                        visibleColumns = new Set(ALL_COLUMNS.map(col => col.key));
+                        renderTable();
+                        renderOptions();
+                    });
+                }
+            };
+
+            button.addEventListener('click', () => {
+                picker.classList.toggle('open');
+            });
+
+            document.addEventListener('click', (event) => {
+                if (!picker.contains(event.target) && event.target !== button) {
+                    picker.classList.remove('open');
+                }
+            });
+
+            renderOptions();
+            updateHeaderVisibility();
+        }
+
         function getStatusColor(status) {
             const colors = {
                 'Pending': '#ffc107',
@@ -4356,6 +4620,7 @@ ${letters}
         
         // Search box listener
         document.getElementById('searchBox').addEventListener('keyup', function() {
+            currentPage = 1;
             searchClaims(this.value);
         });
         
@@ -4417,6 +4682,7 @@ ${letters}
         }
 
         renderTable();
+        initializeColumnPicker();
 
         // --- Readmission helpers: find existing patient, populate form for re-admit, addPatient ---
         // Ensure patients array and fieldIds exist
