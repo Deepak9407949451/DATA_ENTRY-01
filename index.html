@@ -231,13 +231,55 @@
         tbody tr:nth-child(odd) {
             background: #ffffff;
         }
-        
-        tbody td:first-child,
-        thead th:first-child {
+
+        /* Freeze first 3 columns (Action, S.No, Patient Details) */
+        tbody td:nth-child(1),
+        thead th:nth-child(1) {
             position: sticky;
             left: 0;
             background: #eef4fb;
-            z-index: 1;
+            z-index: 2;
+            border-right: 2px solid #667eea;
+            width: 200px;
+            min-width: 200px;
+        }
+
+        tbody td:nth-child(2),
+        thead th:nth-child(2) {
+            position: sticky;
+            left: 200px;
+            background: #eef4fb;
+            z-index: 2;
+            border-right: 2px solid #667eea;
+            min-width: 80px;
+        }
+
+        tbody td:nth-child(3),
+        thead th:nth-child(3) {
+            position: sticky;
+            left: 280px;
+            background: #eef4fb;
+            z-index: 2;
+            border-right: 2px solid #667eea;
+            min-width: 150px;
+        }
+
+        tbody tr:hover td:nth-child(1),
+        tbody tr:hover td:nth-child(2),
+        tbody tr:hover td:nth-child(3) {
+            background: #dfeaf8;
+        }
+
+        tbody tr:nth-child(even) td:nth-child(1),
+        tbody tr:nth-child(even) td:nth-child(2),
+        tbody tr:nth-child(even) td:nth-child(3) {
+            background: #f7fbff;
+        }
+
+        tbody tr:nth-child(odd) td:nth-child(1),
+        tbody tr:nth-child(odd) td:nth-child(2),
+        tbody tr:nth-child(odd) td:nth-child(3) {
+            background: #ffffff;
         }
         
         .no-data {
@@ -558,6 +600,345 @@
         .whatsapp-btn:hover {
             background: #1ebe5d;
             color: white;
+        }
+
+        /* Tabbed Modal Styles */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-overlay.show {
+            display: block;
+        }
+
+        .modal-container {
+            position: fixed;
+            z-index: 1001;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 900px;
+            width: 95%;
+            max-height: 90vh;
+            overflow: hidden;
+            display: none;
+            flex-direction: column;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translate(-50%, -55%);
+            }
+            to {
+                opacity: 1;
+                transform: translate(-50%, -50%);
+            }
+        }
+
+        .modal-container.show {
+            display: flex;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px 25px;
+            border-bottom: 1px solid #e0e0e0;
+            color: white;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 700;
+        }
+
+        .modal-close {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            font-size: 28px;
+            cursor: pointer;
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s;
+        }
+
+        .modal-close:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .modal-tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 2px solid #e0e0e0;
+            overflow-x: auto;
+        }
+
+        .modal-tab {
+            flex: 1;
+            padding: 15px 20px;
+            background: transparent;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+            white-space: nowrap;
+            border-bottom: 3px solid transparent;
+            text-align: center;
+            min-width: 120px;
+        }
+
+        .modal-tab:hover {
+            background: #e7ecf5;
+            color: #333;
+        }
+
+        .modal-tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+            background: white;
+        }
+
+        .modal-content-wrapper {
+            flex: 1;
+            overflow-y: auto;
+            padding: 25px;
+            background: white;
+        }
+
+        .modal-tab-content {
+            display: none;
+        }
+
+        .modal-tab-content.active {
+            display: block;
+            animation: fadeInTab 0.2s ease;
+        }
+
+        @keyframes fadeInTab {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-tab-content .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 15px;
+        }
+
+        .modal-tab-content .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .modal-tab-content .form-group label {
+            margin-bottom: 6px;
+            color: #333;
+            font-weight: 500;
+            font-size: 13px;
+        }
+
+        .modal-tab-content .form-group input,
+        .modal-tab-content .form-group select,
+        .modal-tab-content .form-group textarea {
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 13px;
+            font-family: inherit;
+            transition: border-color 0.3s;
+        }
+
+        .modal-tab-content .form-group input:focus,
+        .modal-tab-content .form-group select:focus,
+        .modal-tab-content .form-group textarea:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
+        }
+
+        .modal-tab-content .form-group textarea {
+            resize: vertical;
+            min-height: 70px;
+        }
+
+        .modal-footer {
+            display: flex;
+            gap: 10px;
+            padding: 20px 25px;
+            border-top: 1px solid #e0e0e0;
+            background: #f8f9fa;
+            justify-content: flex-end;
+        }
+
+        .modal-footer button {
+            padding: 10px 25px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .modal-footer .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+
+        .modal-footer .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .modal-footer .btn-secondary {
+            background: #e9ecef;
+            color: #333;
+        }
+
+        .modal-footer .btn-secondary:hover {
+            background: #dee2e6;
+        }
+
+        /* Details View Styles */
+        .detail-field {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .detail-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #666;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .detail-value {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1a1a1a;
+            word-break: break-word;
+            line-height: 1.4;
+        }
+
+        /* Action Icon Buttons */
+        .action-icons {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .icon-btn {
+            width: 32px;
+            height: 32px;
+            min-width: 32px;
+            padding: 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 16px;
+            transition: all 0.3s;
+            background: transparent;
+        }
+
+        .icon-btn:hover {
+            transform: scale(1.15);
+        }
+
+        .icon-btn.view {
+            color: #667eea;
+            background: rgba(102, 126, 234, 0.1);
+        }
+
+        .icon-btn.view:hover {
+            background: rgba(102, 126, 234, 0.2);
+        }
+
+        .icon-btn.edit {
+            color: #17a2b8;
+            background: rgba(23, 162, 184, 0.1);
+        }
+
+        .icon-btn.edit:hover {
+            background: rgba(23, 162, 184, 0.2);
+        }
+
+        .icon-btn.delete {
+            color: #dc3545;
+            background: rgba(220, 53, 69, 0.1);
+        }
+
+        .icon-btn.delete:hover {
+            background: rgba(220, 53, 69, 0.2);
+        }
+
+        .icon-btn.whatsapp {
+            color: #25D366;
+            background: rgba(37, 211, 102, 0.1);
+        }
+
+        .icon-btn.whatsapp:hover {
+            background: rgba(37, 211, 102, 0.2);
+        }
+
+        @media (max-width: 768px) {
+            .modal-container {
+                max-width: 100%;
+                width: 98%;
+                max-height: 95vh;
+            }
+
+            .modal-tab {
+                padding: 12px 15px;
+                font-size: 12px;
+                min-width: 100px;
+            }
+
+            .modal-content-wrapper {
+                padding: 15px;
+            }
+
+            .modal-tab-content .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            #detailsContent {
+                grid-template-columns: 1fr !important;
+            }
         }
     </style>
 </head>
@@ -1096,6 +1477,347 @@
         </div>
     </div>
     
+    <!-- Tabbed Modal for Add New Claim -->
+    <div class="modal-overlay" id="claimModalOverlay" onclick="if(event.target === this) closeClaimModal()"></div>
+    <div class="modal-container" id="claimModal">
+        <div class="modal-header">
+            <h2>➕ Add New Claim</h2>
+            <button class="modal-close" onclick="closeClaimModal()">✕</button>
+        </div>
+        
+        <div class="modal-tabs">
+            <button class="modal-tab active" onclick="switchTab('patient')">👤 Patient</button>
+            <button class="modal-tab" onclick="switchTab('admission')">🏥 Admission</button>
+            <button class="modal-tab" onclick="switchTab('insurance')">🛡️ Insurance</button>
+            <button class="modal-tab" onclick="switchTab('financial')">💰 Financial</button>
+            <button class="modal-tab" onclick="switchTab('bankcourier')">🏦 Bank/Courier</button>
+            <button class="modal-tab" onclick="switchTab('notes')">📝 Notes</button>
+        </div>
+        
+        <div class="modal-content-wrapper">
+            <form id="claimModalForm">
+                <!-- PATIENT TAB -->
+                <div class="modal-tab-content active" id="tab-patient">
+                    <div class="form-row">
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label style="display:flex;align-items:center;gap:8px;margin-bottom:10px;"><input type="checkbox" name="readmit"> Re-admission</label>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Patient Name *</label>
+                            <input type="text" name="patientName" placeholder="Full Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label>UHID *</label>
+                            <input type="text" name="uhid" placeholder="Unique Health ID" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Mobile Number</label>
+                            <input type="tel" name="mobileNumber" placeholder="10-digit mobile number">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Attender Name</label>
+                            <input type="text" name="attenderName" placeholder="Attender/Guardian Name">
+                        </div>
+                        <div class="form-group">
+                            <label>Relation</label>
+                            <select name="relation">
+                                <option value="">-- Select Relation --</option>
+                                <option>Self</option>
+                                <option>wife</option>
+                                <option>Daughter</option>
+                                <option>Husband</option>
+                                <option>Son</option>
+                                <option>Father</option>
+                                <option>Mother</option>
+                                <option>Grand son</option>
+                                <option>Grandparent</option>
+                                <option>Grandchild</option>
+                                <option>Uncle/Aunt</option>
+                                <option>Nephew/Niece</option>
+                                <option>Brother in Law</option>
+                                <option>sister in law</option>
+                                <option>Brother</option>
+                                <option>sister</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ADMISSION TAB -->
+                <div class="modal-tab-content" id="tab-admission">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>IPD Number</label>
+                            <input type="text" name="ipdNo" placeholder="IPD No">
+                        </div>
+                        <div class="form-group">
+                            <label>Date of Admission</label>
+                            <input type="date" name="doa">
+                        </div>
+                        <div class="form-group">
+                            <label>Date of Discharge</label>
+                            <input type="date" name="dod">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Diagnosis</label>
+                            <input type="text" name="diagnosis" placeholder="Medical diagnosis">
+                        </div>
+                        <div class="form-group">
+                            <label>Surgery/Procedure</label>
+                            <input type="text" name="surgeryName" placeholder="Procedure name">
+                        </div>
+                        <div class="form-group">
+                            <label>Status *</label>
+                            <select name="status" required>
+                                <option value="">-- Choose --</option>
+                                <option value="Admitted">Admitted</option>
+                                <option value="Initial Approved">Initial Approved</option>
+                                <option value="Discharge">Discharge</option>
+                                <option value="Discharge Approved">Discharge Approved</option>
+                                <option value="Pending">Pending</option>
+                                <option value="Settled">Settled</option>
+                                <option value="Denial">Rejected</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- INSURANCE TAB -->
+                <div class="modal-tab-content" id="tab-insurance">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Insurance Limit</label>
+                            <input type="text" name="insuranceLimit" placeholder="Amount">
+                        </div>
+                        <div class="form-group">
+                            <label>TPA/Insurance Name</label>
+                            <select name="tpaName" id="modalTpa">
+                                <option value="">-- Choose --</option>
+                                <option>ADITYA BIRLA GENERAL INSURANCE</option>
+                                <option>FUTURE GENERALI INDIA INSURANCE CO. LTD</option>
+                                <option>SBI GENERAL INSURANCE</option>
+                                <option>MEDIASSIST TPA</option>
+                                <option>GENINS INDIA TPA</option>
+                                <option>UNIVERSAL SAMPO GENERAL INSURANCE</option>
+                                <option>IFFCO TOKIO GENERAL INSURANCE</option>
+                                <option>STAR HEALTH INSURANCE</option>
+                                <option>CSEB - VIDAL HEALTH INSURANCE TPA</option>
+                                <option>HERITAGE TPA</option>
+                                <option>Health Assist Insurance TPA PVT. LTD</option>
+                                <option>HEALTH INDIA TPA</option>
+                                <option>BAJAJ ALLIANZ</option>
+                                <option>ICICI LOMBARD</option>
+                                <option>TATA AIG</option>
+                                <option>RELIANCE GENERAL INSURANCE</option>
+                                <option>VIDAL HEALTH INSURANCE TPA PVT LTD</option>
+                                <option>MD INDIA TPA</option>
+                                <option>GO DIGIT GENERAL INSURANCE</option>
+                                <option>NIVA BUPA</option>
+                                <option>HITPA</option>
+                                <option>FAMILY HEALTH PLAN INSURANCE TPA LIMITED</option>
+                                <option>VOLO HEALTH INSURANCE TPA</option>
+                                <option>LINK-K INSURANCE TPA PRIVATE LIMITED</option>
+                                <option>GENERALI CENTRAL INSURANCE CO. LTD</option>
+                                <option>HDFC ERGO</option>
+                                <option>AKNA TPA</option>
+                                <option>CARE HEALTH INSURACE</option>
+                                <option>ERICSON TPA</option>
+                                <option>MEDSAVE TPA ( MP POWER )</option>
+                                <option>PARK MEDICLAIM TPA</option>
+                                <option>PARAMOUNT TPA</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Insurance Company</label>
+                            <select name="insuranceCompany" id="modalInsuranceCompany">
+                                <option value="">-- Choose --</option>
+                                <option>ICICI LOMBARD GENERAL INSURANCE CO. LTD</option>
+                                <option>IFFCO TOKIO GENERAL INSURANCE CO. LTD</option>
+                                <option>FUTURE GENERALI INDIA INSURANCE CO. LTD</option>
+                                <option>BAJAJ ALLIANZ GENERAL INSURANCE CO. LTD</option>
+                                <option>CARE HEALTH INSURANCE LTD</option>
+                                <option>CSEB-CSPC-CSP-DCL-VIDAL HEALTH TPA</option>
+                                <option>CSEB-CSPC-CSP-GCL-VIDAL HEALTH TPA</option>
+                                <option>CSEB-CSPC-CSP-TCL-VIDAL HEALTH TPA</option>
+                                <option>HDFC ERGO GENERAL INSURANCE CO.LTD</option>
+                                <option>NATIONAL INSURANCE CO. LTD</option>
+                                <option>NIVA BUPA HEALTH INSURANCE CO LTD</option>
+                                <option>THE ORIENTAL INSURANCE COMPANY LIMITED</option>
+                                <option>THE NEW INDIA ASSURANCE CO. LTD</option>
+                                <option>STAR HEALTH AND ALLIED INSURANCE CO.LTD</option>
+                                <option>UNITED INDIA INSURANCE CO LTD</option>
+                                <option>SBI GENERAL INSURANCE CO. LTD</option>
+                                <option>TATA AIG GENERAL INSURANCE CO. LTD</option>
+                                <option>RELIANCE GERENAL INSURANCE</option>
+                                <option>GENERALI CENTRAL INSURANCE CO.LTD</option>
+                                <option>ADITYA BIRLA HEALTH INSURANCE</option>
+                                <option>MANIPAL CIGNA HEALTH INSURANCE COMPANY LIMITED</option>
+                                <option>GO DIGIT GENERAL INSURANCE COMPANY LIMITED</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Insurance ID</label>
+                            <input type="text" name="insuranceID" placeholder="ID Number">
+                        </div>
+                        <div class="form-group">
+                            <label>Claim Number</label>
+                            <input type="text" name="claimNo" placeholder="Claim No">
+                        </div>
+                        <div class="form-group">
+                            <label>Policy Number</label>
+                            <input type="text" name="policyNumber" placeholder="Policy No">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Employee ID</label>
+                            <input type="text" name="empID" placeholder="If applicable">
+                        </div>
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>Insurance Address</label>
+                            <textarea name="insuranceAddress" placeholder="Full address"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FINANCIAL TAB -->
+                <div class="modal-tab-content" id="tab-financial">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Bill Invoice Number</label>
+                            <input type="text" name="billInvoiceNo" placeholder="Invoice No">
+                        </div>
+                        <div class="form-group">
+                            <label>Total Bill Amount</label>
+                            <input type="number" name="totalBill" placeholder="0.00" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label>Approved Amount</label>
+                            <input type="number" name="approved" placeholder="0.00" step="0.01">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Discount</label>
+                            <input type="number" name="discount" placeholder="0.00" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label>Deduction</label>
+                            <input type="number" name="deduction" placeholder="0.00" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label>Patient Pay</label>
+                            <input type="number" name="patientPay" placeholder="0.00" step="0.01">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Settlement Amount</label>
+                            <input type="number" name="settlementAmount" placeholder="0.00" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label>TDS Amount</label>
+                            <input type="number" name="tds" placeholder="0.00" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label>Payment Date</label>
+                            <input type="date" name="paymentDate">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>UTR</label>
+                            <input type="text" name="utr" placeholder="UTR Number">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- BANK/COURIER TAB -->
+                <div class="modal-tab-content" id="tab-bankcourier">
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Bank Name</label>
+                            <select name="bankName" id="modalBankName" onchange="populateModalBankDetails()">
+                                <option value="">-- Choose --</option>
+                                <option value="HDFC BANK">HDFC BANK</option>
+                                <option value="UNION BANK">UNION BANK</option>
+                                <option value="AXIS BANK">AXIS BANK</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Bank Account Number</label>
+                            <input type="text" name="bankAccountNo" id="modalBankAccountNo" placeholder="Account Number">
+                        </div>
+                        <div class="form-group">
+                            <label>IFSC Code</label>
+                            <input type="text" name="ifscCode" id="modalIfscCode" placeholder="IFSC">
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>Bank Address</label>
+                            <textarea name="bankAddress" id="modalBankAddress" placeholder="Full address"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Courier Details</label>
+                            <input type="text" name="courierDetails" placeholder="Service/Tracking">
+                        </div>
+                        <div class="form-group">
+                            <label>Courier Date</label>
+                            <input type="date" name="courierDate">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NOTES TAB -->
+                <div class="modal-tab-content" id="tab-notes">
+                    <div class="form-row">
+                        <div class="form-group" style="grid-column: 1 / -1;">
+                            <label>Remarks</label>
+                            <textarea name="remark" placeholder="Additional notes" style="min-height: 120px;"></textarea>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <div class="modal-footer">
+            <button type="button" class="btn-secondary" onclick="closeClaimModal()">Cancel</button>
+            <button type="button" class="btn-primary" onclick="submitClaimForm()">Add Claim</button>
+        </div>
+    </div>
+    
+    <!-- View Claim Details Modal -->
+    <div class="modal-overlay" id="detailsModalOverlay" onclick="if(event.target === this) closeDetailsModal()"></div>
+    <div class="modal-container" id="detailsModal" style="max-width: 700px; max-height: 85vh;">
+        <div class="modal-header">
+            <h2 id="detailsTitle">📋 Claim Details</h2>
+            <button class="modal-close" onclick="closeDetailsModal()">✕</button>
+        </div>
+        
+        <div class="modal-content-wrapper" style="padding-top: 0; padding-bottom: 0;">
+            <div id="detailsContent" style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; padding: 25px;">
+                <!-- Details will be populated here -->
+            </div>
+        </div>
+        
+        <div class="modal-footer" style="justify-content: flex-end; gap: 10px;">
+            <button type="button" class="btn-secondary" onclick="closeDetailsModal()">Close</button>
+            <button type="button" class="btn-primary" onclick="editFromDetails()">Edit</button>
+        </div>
+    </div>
+    
     <script>
         function makeEntries(names, details) {
             return Object.fromEntries(names.map(name => [name, details]));
@@ -1194,21 +1916,38 @@
         }
 
         function populateBankDetailsFromTpa() {
-            const selectedValue = document.getElementById("tpa").value;
+            // Support both main form (`tpa`) and modal (`modalTpa`)
+            const mainTpaEl = document.getElementById('tpa');
+            const modalTpaEl = document.getElementById('modalTpa');
+            const selectedValue = (mainTpaEl && mainTpaEl.value) || (modalTpaEl && modalTpaEl.value) || '';
             const details = tpaBankDetails[selectedValue] || {};
-            const insuranceAddressField = document.getElementById("insuranceAddress");
-            const bankNameField = document.getElementById("bankName");
-            if (bankNameField) {
-                bankNameField.value = details.bankName || "";
-            }
+
+            // Main form fields
+            const insuranceAddressField = document.getElementById('insuranceAddress');
+            const bankNameField = document.getElementById('bankName');
+            if (bankNameField) bankNameField.value = details.bankName || '';
+            if (insuranceAddressField) insuranceAddressField.value = tpaInsuranceAddresses[selectedValue] || insuranceAddressField.value || '';
+
+            // Modal form fields
+            const modalInsuranceAddress = document.querySelector('#claimModalForm textarea[name="insuranceAddress"]');
+            const modalBankName = document.getElementById('modalBankName');
+            if (modalBankName) modalBankName.value = details.bankName || '';
+            if (modalInsuranceAddress) modalInsuranceAddress.value = tpaInsuranceAddresses[selectedValue] || modalInsuranceAddress.value || '';
+
+            // Populate bank-specific details for both forms
             populateBankDetailsFromBankSelection();
-            insuranceAddressField.value = tpaInsuranceAddresses[selectedValue] || insuranceAddressField.value || "";
+            populateModalBankDetails();
         }
 
         function populateInsuranceAddressFromCompany() {
-            const selectedValue = document.getElementById("insuranceCompany").value;
-            const insuranceAddressField = document.getElementById("insuranceAddress");
-            insuranceAddressField.value = tpaInsuranceAddresses[selectedValue] || insuranceAddressField.value || "";
+            // Support both main form and modal
+            const mainEl = document.getElementById('insuranceCompany');
+            const modalEl = document.getElementById('modalInsuranceCompany');
+            const selectedValue = (mainEl && mainEl.value) || (modalEl && modalEl.value) || '';
+            const insuranceAddressField = document.getElementById('insuranceAddress');
+            if (insuranceAddressField) insuranceAddressField.value = tpaInsuranceAddresses[selectedValue] || insuranceAddressField.value || '';
+            const modalInsuranceAddress = document.querySelector('#claimModalForm textarea[name="insuranceAddress"]');
+            if (modalInsuranceAddress) modalInsuranceAddress.value = tpaInsuranceAddresses[selectedValue] || modalInsuranceAddress.value || '';
         }
 
         function formatDateForDisplay(value) {
@@ -1276,6 +2015,7 @@
         });
         localStorage.setItem('claims', JSON.stringify(claims));
         let editingIndex = -1;
+        let currentDetailsIndex = -1;
         let selectedIndices = new Set();
         let currentFilter = '';
         let dateFilterFrom = null;
@@ -1871,25 +2611,24 @@
         }
 
         function openClaimForm(isEdit = false) {
-            const formHeader = document.getElementById('formHeader');
-            const formSection = document.getElementById('formSection');
-            const formArrow = document.getElementById('formArrow');
-            const titleLabel = document.getElementById('formTitleLabel');
-            const form = document.getElementById('claimForm');
-
-            setFormMode(isEdit);
-            if (!isEdit && form) form.reset();
-            if (titleLabel) titleLabel.textContent = isEdit ? '✏️ Edit Claim:' : '📝 Add New Claim:';
-            if (formHeader) formHeader.classList.remove('hidden');
-            if (formSection) {
-                formSection.classList.remove('hidden');
-                formSection.classList.add('open');
+            // New version: Open modal instead of collapsible form
+            const modal = document.getElementById('claimModal');
+            const overlay = document.getElementById('claimModalOverlay');
+            
+            // Reset form if not editing
+            if (!isEdit) {
+                document.getElementById('claimModalForm').reset();
+                editingIndex = -1;
             }
-            if (formArrow) {
-                formArrow.classList.add('rotated');
-            }
-            if (form) {
-                form.scrollIntoView({ behavior: 'smooth' });
+            
+            // Show modal
+            modal.classList.add('show');
+            overlay.classList.add('show');
+            
+            // Switch to first tab
+            const firstTab = document.querySelector('.modal-tab');
+            if (firstTab) {
+                firstTab.click();
             }
         }
 
@@ -2095,14 +2834,116 @@
             const claim = claims[index];
 
             if (claim) {
-                populateClaimForm(claim);
+                populateModalForm(claim);
             }
             
-            setFormMode(true);
             openClaimForm(true);
-            document.querySelector('.form-section').scrollIntoView({ behavior: 'smooth' });
-            recalculateClaimAmounts();
             showAlert('Edit mode activated. Update and submit to save changes.', 'success');
+        }
+
+        function populateModalForm(claim, options = {}) {
+            if (!claim) return;
+
+            const form = document.getElementById('claimModalForm');
+            if (!form) return;
+
+            const skipOnReAdmit = Boolean(options.skipReAdmit);
+
+            const fieldAliases = {
+                patientName: ['patientName', 'Patient Name', 'name'],
+                uhid: ['uhid', 'UHID'],
+                mobileNumber: ['mobileNumber', 'mobile', 'phone'],
+                attenderName: ['attenderName', 'Attender Name'],
+                relation: ['relation', 'Relation'],
+                ipdNo: ['ipdNo', 'IPD No'],
+                doa: ['doa', 'DOA', 'doaDate'],
+                dod: ['dod', 'DOD', 'dodDate'],
+                diagnosis: ['diagnosis', 'Diagnosis'],
+                surgeryName: ['surgeryName', 'SurgeryName', 'Surgery Name'],
+                status: ['status', 'Status'],
+                insuranceLimit: ['insuranceLimit', 'Insurance Limit'],
+                tpaName: ['tpaName', 'tpa', 'TPA/Ins. Name'],
+                insuranceCompany: ['insuranceCompany', 'Insurance Company', 'settlementSummary'],
+                insuranceID: ['insuranceID', 'insuranceIdNo', 'Insurance ID No'],
+                claimNo: ['claimNo', 'Claim No'],
+                policyNumber: ['policyNumber', 'policyNo', 'Policy No'],
+                empID: ['empID', 'empIdNo', 'EMP ID No'],
+                insuranceAddress: ['insuranceAddress', 'Insurance Address'],
+                billInvoiceNo: ['billInvoiceNo', 'Bill Invoice No'],
+                totalBill: ['totalBill', 'Total Bill'],
+                approved: ['approved', 'Approved'],
+                discount: ['discount', 'Discount'],
+                deduction: ['deduction', 'Deduction'],
+                patientPay: ['patientPay', 'Patient Pay'],
+                settlementAmount: ['settlementAmount', 'Settlement Amount'],
+                tds: ['tds', 'tdsAmount', 'TDS Amount'],
+                paymentDate: ['paymentDate', 'payment_date', 'Payment Date'],
+                utr: ['utr', 'UTR', 'utrno'],
+                bankName: ['bankName', 'Bank Name'],
+                bankAccountNo: ['bankAccountNo', 'Bank Account No', 'Bank Account Number'],
+                ifscCode: ['ifscCode', 'IFSC Code', 'IFSC'],
+                bankAddress: ['bankAddress', 'Bank Address'],
+                courierDetails: ['courierDetails', 'Courier Details'],
+                courierDate: ['courierDate', 'Courier Date'],
+                remark: ['remark', 'Remark']
+            };
+
+            form.querySelectorAll('input, select, textarea').forEach((element) => {
+                const fieldName = element.name;
+                if (!fieldName) return;
+
+                const value = getClaimFieldValue(claim, fieldAliases[fieldName] || [fieldName]);
+                let normalizedValue = value;
+
+                if (['doa', 'dod', 'paymentDate', 'courierDate'].includes(fieldName)) {
+                    normalizedValue = normalizeDateForStorage(value);
+                }
+
+                if (element.type === 'checkbox') {
+                    element.checked = Boolean(normalizedValue);
+                } else if (element.type === 'number') {
+                    element.value = normalizedValue ?? '';
+                } else {
+                    element.value = normalizedValue ?? '';
+                }
+            });
+
+            // If this call is for re-admit, clear sensitive admission/payment fields
+            if (skipOnReAdmit) {
+                const fieldsToClear = ['doa','dod','claimNo','billInvoiceNo','totalBill','approved','discount','deduction','patientPay','settlementAmount','tds','paymentDate','utr','courierDetails','courierDate','remark','remarks','diagnosis','surgeryName','ipdNo'];
+                fieldsToClear.forEach(fn => {
+                    const el = form.querySelector(`[name="${fn}"]`);
+                    if (el) {
+                        if (el.type === 'checkbox' || el.type === 'radio') el.checked = false;
+                        else el.value = '';
+                        el.dispatchEvent(new Event('change', { bubbles: true }));
+                    }
+                });
+
+                // Ensure status is set to Admitted
+                const statusEl = form.querySelector('[name="status"]');
+                if (statusEl) {
+                    if (statusEl.tagName === 'SELECT') {
+                        let found = false;
+                        Array.from(statusEl.options).forEach(opt => {
+                            if (opt.value === 'Admitted' || String(opt.text).toLowerCase() === 'admitted') {
+                                statusEl.value = opt.value;
+                                found = true;
+                            }
+                        });
+                        if (!found) statusEl.value = 'Admitted';
+                    } else {
+                        statusEl.value = 'Admitted';
+                    }
+                    statusEl.dispatchEvent(new Event('change', { bubbles: true }));
+                }
+            }
+
+            // Set re-admission checkbox if applicable
+            const readmitCheckbox = form.querySelector('input[name="readmit"]');
+            if (readmitCheckbox && claim.readmit === 'Yes') {
+                readmitCheckbox.checked = true;
+            }
         }
         
         function deleteClaim(index) {
@@ -2892,14 +3733,15 @@ ${letters}
                 const isChecked = selectedIndices.has(actualIndex);
                 return `
                 <tr>
-                    <td>
-                        <div class="action-buttons">
-                            <input type="checkbox" onchange="toggleSelect(${actualIndex}, this)" ${isChecked ? 'checked' : ''}>
-                            <button class="btn-danger action-btn" style="background: #17a2b8;" onclick="editClaim(${actualIndex})">✎ Edit</button>
-                            <button class="btn-danger action-btn" onclick="deleteClaim(${actualIndex})">✕ Delete</button>
-                            <button class="btn-secondary action-btn whatsapp-btn" onclick="sendWhatsAppByIndex(${actualIndex})" title="WhatsApp">🟢💬</button>
-                        </div>
-                    </td>
+                        <td>
+                            <div class="action-icons">
+                                <input type="checkbox" onchange="toggleSelect(${actualIndex}, this)" ${isChecked ? 'checked' : ''}>
+                                <button class="icon-btn view" title="View" onclick="showDetails(${actualIndex})">👁️</button>
+                                <button class="icon-btn edit" title="Edit" onclick="editClaim(${actualIndex})">✎</button>
+                                <button class="icon-btn delete" title="Delete" onclick="deleteClaim(${actualIndex})">✕</button>
+                                <button class="icon-btn whatsapp" title="WhatsApp" onclick="sendWhatsAppByIndex(${actualIndex})">💬</button>
+                            </div>
+                        </td>
                     <td>${displayIndex + 1}</td>
                     <td>${claim.patientName || '-'}</td>
                     <td>${claim.uhid || '-'}</td>
@@ -3524,6 +4366,9 @@ ${letters}
         renderInvoiceRows();
         document.getElementById('tpa').addEventListener('change', populateBankDetailsFromTpa);
         document.getElementById('insuranceCompany').addEventListener('change', populateInsuranceAddressFromCompany);
+        // Also wire modal fields
+        if (document.getElementById('modalTpa')) document.getElementById('modalTpa').addEventListener('change', populateBankDetailsFromTpa);
+        if (document.getElementById('modalInsuranceCompany')) document.getElementById('modalInsuranceCompany').addEventListener('change', populateInsuranceAddressFromCompany);
         const claimForm = document.getElementById('claimForm');
         ['totalBill', 'approved', 'discount', 'patientPay', 'settlementAmount', 'tds'].forEach((fieldName) => {
             const field = claimForm.querySelector(`[name="${fieldName}"]`);
@@ -3796,34 +4641,236 @@ ${letters}
 
         // Auto-enable Re-admission checkbox only when both Patient Name and UHID match an existing patient
         document.addEventListener('DOMContentLoaded', () => {
-            const nameEl = document.querySelector('[name="patientName"]');
-            const uhidEl = document.querySelector('[name="uhid"]');
-            const readmitCheckbox = document.getElementById('readmitCheckbox');
-            if (!nameEl || !uhidEl || !readmitCheckbox) return;
+            // Main form elements
+            const mainNameEl = document.querySelector('#claimForm [name="patientName"]');
+            const mainUhidEl = document.querySelector('#claimForm [name="uhid"]');
+            const mainReadmitCheckbox = document.getElementById('readmitCheckbox');
+
+            // Modal form elements
+            const modalNameEl = document.querySelector('#claimModalForm [name="patientName"]');
+            const modalUhidEl = document.querySelector('#claimModalForm [name="uhid"]');
+            const modalReadmitCheckbox = document.querySelector('#claimModalForm input[name="readmit"]');
 
             const normalize = s => String(s || '').toLowerCase().trim();
-            const shouldEnableReadmit = () => {
+
+            const shouldEnableReadmitFor = (nameEl, uhidEl) => {
+                if (!nameEl || !uhidEl) return false;
                 const nameValue = normalize(nameEl.value);
                 const uhidValue = normalize(uhidEl.value);
                 if (!nameValue || !uhidValue) return false;
                 return claims.some(c => normalize(c.patientName) === nameValue && normalize(c.uhid || c.UHID || '') === uhidValue);
             };
 
-            const updateReadmitCheckbox = () => {
-                if (shouldEnableReadmit()) {
-                    readmitCheckbox.checked = true;
-                } else {
-                    readmitCheckbox.checked = false;
-                }
-            };
+            function attachAutoReadmit(nameEl, uhidEl, readmitEl) {
+                if (!nameEl || !uhidEl || !readmitEl) return;
+                const update = () => {
+                    if (shouldEnableReadmitFor(nameEl, uhidEl)) readmitEl.checked = true;
+                    else readmitEl.checked = false;
+                };
+                uhidEl.addEventListener('blur', update);
+                nameEl.addEventListener('blur', update);
+                uhidEl.addEventListener('input', () => { if (!shouldEnableReadmitFor(nameEl, uhidEl) && readmitEl.checked) readmitEl.checked = false; });
+                nameEl.addEventListener('input', () => { if (!shouldEnableReadmitFor(nameEl, uhidEl) && readmitEl.checked) readmitEl.checked = false; });
+            }
 
-            uhidEl.addEventListener('blur', updateReadmitCheckbox);
-            nameEl.addEventListener('blur', updateReadmitCheckbox);
-            uhidEl.addEventListener('input', () => { if (!shouldEnableReadmit() && readmitCheckbox.checked) readmitCheckbox.checked = false; });
-            nameEl.addEventListener('input', () => { if (!shouldEnableReadmit() && readmitCheckbox.checked) readmitCheckbox.checked = false; });
+            attachAutoReadmit(mainNameEl, mainUhidEl, mainReadmitCheckbox);
+            attachAutoReadmit(modalNameEl, modalUhidEl, modalReadmitCheckbox);
+
+            // Modal readmit behavior: populate modal with existing patient on check
+            if (modalReadmitCheckbox) {
+                modalReadmitCheckbox.addEventListener('change', (e) => {
+                    if (!e.target.checked) return;
+                    const form = document.getElementById('claimModalForm');
+                    const nameInput = (form.querySelector('[name="patientName"]') || {}).value || '';
+                    const uhidInput = (form.querySelector('[name="uhid"]') || {}).value || '';
+                    const mobileInput = (form.querySelector('[name="mobileNumber"]') || {}).value || '';
+                    if (!nameInput || (!uhidInput && !mobileInput)) {
+                        alert('Please enter Patient Name and UHID or Mobile before selecting Re-admission');
+                        e.target.checked = false;
+                        return;
+                    }
+                    const normalizeStr = s => String(s || '').toLowerCase().trim();
+                    const existing = claims.find(c => {
+                        const nameMatch = normalizeStr(c.patientName) === normalizeStr(nameInput);
+                        if (!nameMatch) return false;
+                        const uhidMatch = uhidInput && normalizeStr(c.uhid || c.UHID || '') === normalizeStr(uhidInput);
+                        const mobileMatch = mobileInput && normalizeStr(c.mobileNumber || c.mobile || c.phone || '') === normalizeStr(mobileInput);
+                        return uhidMatch || mobileMatch;
+                    });
+                    if (!existing) {
+                        alert('No existing patient found for re-admission');
+                        e.target.checked = false;
+                        return;
+                    }
+                    const proceed = confirm('Existing patient found. Populate form with existing patient data?');
+                    if (!proceed) { e.target.checked = false; return; }
+                    // Populate modal but KEEP critical admission/payment fields empty for re-admit
+                    populateModalForm(existing, { skipReAdmit: true });
+                    showAlert('Patient data loaded. Review and update admission details, then submit.', 'success');
+                    e.target.checked = false;
+                });
+            }
         });
 
         render();
+
+        // Details modal helpers
+        function showDetails(index) {
+            const claim = claims[index];
+            if (!claim) return;
+            currentDetailsIndex = index;
+            const container = document.getElementById('detailsContent');
+            if (!container) return;
+
+            const items = [
+                ['Patient Name', claim.patientName || '-'],
+                ['UHID', claim.uhid || '-'],
+                ['Mobile', claim.mobileNumber || claim.mobile || '-'],
+                ['Attender', claim.attenderName || '-'],
+                ['Relation', claim.relation || '-'],
+                ['IPD No', claim.ipdNo || '-'],
+                ['DOA', formatDateForDisplay(claim.doa)],
+                ['DOD', formatDateForDisplay(claim.dod)],
+                ['Diagnosis', claim.diagnosis || '-'],
+                ['Surgery', claim.surgeryName || '-'],
+                ['Status', claim.status || '-'],
+                ['TPA / TPA Name', claim.tpaName || claim.tpa || '-'],
+                ['Insurance Company', claim.insuranceCompany || '-'],
+                ['Insurance Limit', claim.insuranceLimit || '-'],
+                ['Insurance ID', claim.insuranceID || '-'],
+                ['Claim No', claim.claimNo || '-'],
+                ['Policy No', claim.policyNumber || '-'],
+                ['Bill Invoice No', claim.billInvoiceNo || '-'],
+                ['Total Bill', claim.totalBill || '-'],
+                ['Approved', claim.approved || '-'],
+                ['Discount', claim.discount || '-'],
+                ['Deduction', claim.deduction || '-'],
+                ['Patient Pay', claim.patientPay || '-'],
+                ['Settlement Amount', claim.settlementAmount || '-'],
+                ['TDS', claim.tds || '-'],
+                ['Payment Date', formatDateForDisplay(claim.paymentDate || claim.payment_date || '')],
+                ['UTR', claim.utr || '-'],
+                ['Bank Name', claim.bankName || '-'],
+                ['Account No', claim.bankAccountNo || '-'],
+                ['IFSC', claim.ifscCode || '-'],
+                ['Bank Address', claim.bankAddress || '-'],
+                ['Courier Details', claim.courierDetails || '-'],
+                ['Courier Date', formatDateForDisplay(claim.courierDate || claim.courier_date || '')],
+                ['Remarks', claim.remark || claim.remarks || '-']
+            ];
+
+            container.innerHTML = items.map(([label, value]) => `
+                <div class="detail-field">
+                    <div class="detail-label">${label}</div>
+                    <div class="detail-value">${String(value)}</div>
+                </div>
+            `).join('');
+
+            // Show modal
+            const overlay = document.getElementById('detailsModalOverlay');
+            const modal = document.getElementById('detailsModal');
+            if (overlay) overlay.classList.add('show');
+            if (modal) modal.classList.add('show');
+        }
+
+        function closeDetailsModal() {
+            const overlay = document.getElementById('detailsModalOverlay');
+            const modal = document.getElementById('detailsModal');
+            if (overlay) overlay.classList.remove('show');
+            if (modal) modal.classList.remove('show');
+            currentDetailsIndex = -1;
+        }
+
+        function editFromDetails() {
+            if (currentDetailsIndex === -1) return;
+            editingIndex = currentDetailsIndex;
+            const claim = claims[editingIndex];
+            if (!claim) return;
+            populateModalForm(claim);
+            openClaimForm(true);
+            closeDetailsModal();
+        }
+
+        // Modal Functions
+        function closeClaimModal() {
+            const modal = document.getElementById('claimModal');
+            const overlay = document.getElementById('claimModalOverlay');
+            modal.classList.remove('show');
+            overlay.classList.remove('show');
+            document.getElementById('claimModalForm').reset();
+        }
+
+        function switchTab(tabName) {
+            // Hide all tab contents
+            document.querySelectorAll('.modal-tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.modal-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab content
+            const tabContent = document.getElementById(`tab-${tabName}`);
+            if (tabContent) {
+                tabContent.classList.add('active');
+            }
+            
+            // Mark tab as active - find and mark the button that was clicked
+            document.querySelectorAll('.modal-tab').forEach(tab => {
+                if (tab.getAttribute('onclick').includes(tabName)) {
+                    tab.classList.add('active');
+                }
+            });
+        }
+
+        function populateModalBankDetails() {
+            const bankNameField = document.getElementById('modalBankName');
+            const selectedValue = bankNameField.value;
+            const details = bankDetailsByName[selectedValue] || {};
+            
+            document.getElementById('modalBankAccountNo').value = details.bankAccountNo || '';
+            document.getElementById('modalIfscCode').value = details.ifscCode || '';
+            document.getElementById('modalBankAddress').value = details.bankAddress || '';
+        }
+
+        function submitClaimForm() {
+            const form = document.getElementById('claimModalForm');
+            if (!form.checkValidity()) {
+                alert('Please fill all required fields');
+                return;
+            }
+
+            const formData = new FormData(form);
+            const claimData = Object.fromEntries(formData);
+            
+            // Convert empty strings to appropriate values
+            Object.keys(claimData).forEach(key => {
+                if (claimData[key] === '') {
+                    delete claimData[key];
+                }
+            });
+
+            // Handle re-admission checkbox
+            claimData.readmit = form.querySelector('input[name="readmit"]').checked ? 'Yes' : 'No';
+
+            if (editingIndex >= 0) {
+                // Update existing claim
+                claims[editingIndex] = { ...claims[editingIndex], ...claimData };
+                editingIndex = -1;
+                showAlert('Claim updated successfully!', 'success');
+            } else {
+                // Add new claim
+                claims.push(claimData);
+                showAlert('Claim added successfully!', 'success');
+            }
+
+            localStorage.setItem('claims', JSON.stringify(claims));
+            updateDashboard();
+            renderTable();
+            closeClaimModal();
+        }
     </script>
 </body>
 </html>
