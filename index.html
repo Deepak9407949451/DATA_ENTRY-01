@@ -4203,11 +4203,6 @@ ${letters}
                         claim.paymentDate = normalizeDateForStorage(claim.paymentDate ?? claim.payment_date ?? claim['Payment Date'] ?? claim['payment date'] ?? claim['payment/utr'] ?? claim['Payment/UTR'] ?? '');
                         claim.courierDate = normalizeDateForStorage(claim.courierDate ?? claim.courier_date ?? claim['Courier Date'] ?? '');
                         
-                        // Auto-generate Claim No if missing
-                        if (!claim.claimNo || claim.claimNo.trim() === '') {
-                            claim.claimNo = 'CLM-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-                        }
-                        
                         // Validate required fields (Mobile is optional)
                         if (claim.uhid && claim.patientName && claim.ipdNo) {
                             // Check for duplicate
@@ -4294,11 +4289,6 @@ ${letters}
                         claim.dod = normalizeDateForStorage(claim.dod);
                         claim.paymentDate = normalizeDateForStorage(claim.paymentDate ?? claim.payment_date ?? claim['Payment Date'] ?? claim['payment date'] ?? claim['payment/utr'] ?? claim['Payment/UTR'] ?? '');
                         claim.courierDate = normalizeDateForStorage(claim.courierDate ?? claim.courier_date ?? claim['Courier Date'] ?? '');
-                        
-                        // Auto-generate Claim No if missing
-                        if (!claim.claimNo || claim.claimNo.trim() === '') {
-                            claim.claimNo = 'CLM-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9).toUpperCase();
-                        }
                         
                         // Validate required fields (Mobile is optional)
                         if (claim.uhid && claim.patientName && claim.ipdNo) {
