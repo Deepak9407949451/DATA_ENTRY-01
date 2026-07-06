@@ -2609,44 +2609,72 @@
             showNotification('Reset to Desktop', 'success');
         }
 
-        async function createPatientFolderLocally(patientName) {
+        async function createPatientFolderLocally(patientName, details = {}) {
             try {
-                console.log("[DEBUG] createPatientFolderLocally called with:", patientName);
+                console.log("[DEBUG] createPatientFolderLocally called with:", patientName, details);
 
                 if (!patientName || !patientName.trim()) {
                     showNotification('Patient name is required', 'error');
                     return false;
                 }
 
-                const tpaInput = document.getElementById('tpa') || document.querySelector('[name="tpaName"]');
-                const doaInput = document.querySelector('input[name="doa"]');
-                const tpa = tpaInput ? tpaInput.value.trim() : '';
-                const doa = doaInput ? doaInput.value.trim() : '';
+                const form = details.form || document.getElementById('claimModalForm') || document.getElementById('claimForm');
+                const tpaField = form?.querySelector('[name="tpaName"], [name="tpa"], #tpa, #modalTpa') || document.getElementById('tpa') || document.getElementById('modalTpa') || document.querySelector('[name="tpaName"]');
+                const doaField = form?.querySelector('[name="doa"]') || document.querySelector('input[name="doa"]');
+                const tpa = (details.tpa ?? tpaField?.value ?? '').toString().trim();
+                const doa = (details.doa ?? doaField?.value ?? '').toString().trim();
                 const folderPath = localStorage.getItem('patientFolderPath') || 'C:\\Users\\DEEPAK\\Desktop';
-                const folderNameParts = [patientName];
-                if (tpa) folderNameParts.push(`(${tpa})`);
-                if (doa) folderNameParts.push(doa);
+                const folderNameParts = [patientName.trim()];
+                if (tpa) folderNameParts.push(`TPA-${tpa}`);
+                if (doa) folderNameParts.push(`DOA-${doa}`);
                 const folderName = folderNameParts.join(' ').trim();
+                const safeFolderName = folderName.replace(/[\\/:*?"<>|]/g, ' ').replace(/\s+/g, ' ').trim();
 
                 showNotification('Creating folder...', 'info');
-                const response = await fetch('http://localhost:5000/api/create-folder', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        patientName: patientName,
-                        tpa: tpa,
-                        doa: doa,
-                        folderName: folderName,
-                        baseFolderPath: folderPath
-                    })
-                });
 
-                const result = await response.json();
-                if (result.success) {
-                    showNotification('Your folder has been successfully created.', 'success');
-                    return true;
+                const endpoints = [
+                    'http://127.0.0.1:5000/api/create-folder',
+                    'http://localhost:5000/api/create-folder'
+                ];
+
+                let lastError = 'Folder server not available. Please run the local folder creator service.';
+                for (const endpoint of endpoints) {
+                    try {
+                        const response = await fetch(endpoint, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                patientName: patientName.trim(),
+                                tpa: tpa,
+                                doa: doa,
+                                folderName: safeFolderName,
+                                baseFolderPath: folderPath
+                            })
+                        });
+
+                        const text = await response.text();
+                        let result = {};
+                        try {
+                            result = text ? JSON.parse(text) : {};
+                        } catch (parseError) {
+                            result = { success: response.ok, message: text || 'Unexpected response from folder server' };
+                        }
+
+                        if (response.ok && result.success) {
+                            showNotification(result.message || 'Your folder has been successfully created.', 'success');
+                            return true;
+                        }
+
+                        lastError = result.message || `Folder creation failed (${response.status})`;
+                        if (response.ok) {
+                            break;
+                        }
+                    } catch (error) {
+                        lastError = error.message || 'Folder server not available.';
+                    }
                 }
-                showNotification(result.message || 'Folder creation failed', 'error');
+
+                showNotification(lastError, 'error');
                 return false;
             } catch (error) {
                 console.error('Folder creation error:', error);
@@ -2830,6 +2858,13 @@
             const mobileInput = (claimFromForm.mobileNumber || claimFromForm.mobile || claimFromForm.phone || '').trim();
             const isReadmitChecked = formData.get('readmit') !== null;
 
+            const shouldCreateFolder = statusValue === 'Discharge Approved' && nameInput;
+            const folderDetails = {
+                form,
+                tpa: claimFromForm.tpaName || claimFromForm.tpa || '',
+                doa: claimFromForm.doa || ''
+            };
+
             // normalize helper
             const normalize = s => String(s || '').toLowerCase().trim();
 
@@ -2840,7 +2875,7 @@
                 editingIndex = -1;
                 localStorage.setItem('claims', JSON.stringify(claims));
                 if (wasApprovedDischarge && nameInput) {
-                    const created = await createPatientFolderLocally(nameInput);
+                    const created = await createPatientFolderLocally(nameInput, folderDetails);
                     if (created) {
                         showAlert('Your folder has been successfully created.', 'success');
                     }
@@ -2889,7 +2924,10 @@
                 localStorage.setItem('claims', JSON.stringify(claims));
                 showAlert('Patient re-admitted successfully (new serial created).', 'success');
                 if (newClaim.status === 'Discharge Approved' && newClaim.patientName) {
-                    const created = await createPatientFolderLocally(newClaim.patientName);
+                    const created = await createPatientFolderLocally(newClaim.patientName, {
+                        tpa: newClaim.tpaName || newClaim.tpa || '',
+                        doa: newClaim.doa || ''
+                    });
                     if (created) {
                         showAlert('Your folder has been successfully created.', 'success');
                     }
@@ -2907,8 +2945,8 @@
             if (!toAdd.claimNo || toAdd.claimNo.trim() === '') toAdd.claimNo = generateClaimNo();
             claims.push(toAdd);
             localStorage.setItem('claims', JSON.stringify(claims));
-            if (statusValue === 'Discharge Approved' && nameInput) {
-                const created = await createPatientFolderLocally(nameInput);
+            if (shouldCreateFolder) {
+                const created = await createPatientFolderLocally(nameInput, folderDetails);
                 if (created) {
                     showAlert('Your folder has been successfully created.', 'success');
                 }
@@ -5091,7 +5129,7 @@ ${letters}
             document.getElementById('modalBankAddress').value = details.bankAddress || '';
         }
 
-        function submitClaimForm() {
+        async function submitClaimForm() {
             const form = document.getElementById('claimModalForm');
             if (!form.checkValidity()) {
                 alert('Please fill all required fields');
@@ -5110,6 +5148,14 @@ ${letters}
 
             // Handle re-admission checkbox
             claimData.readmit = form.querySelector('input[name="readmit"]').checked ? 'Yes' : 'No';
+            const statusValue = claimData.status || '';
+            const patientName = (claimData.patientName || '').trim();
+            const shouldCreateFolder = statusValue === 'Discharge Approved' && patientName;
+            const folderDetails = {
+                form,
+                tpa: claimData.tpaName || claimData.tpa || '',
+                doa: claimData.doa || ''
+            };
 
             if (editingIndex >= 0) {
                 // Update existing claim
@@ -5126,6 +5172,13 @@ ${letters}
             updateDashboard();
             renderTable();
             closeClaimModal();
+
+            if (shouldCreateFolder) {
+                const created = await createPatientFolderLocally(patientName, folderDetails);
+                if (created) {
+                    showAlert('Your folder has been successfully created.', 'success');
+                }
+            }
         }
     </script>
 </body>
