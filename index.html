@@ -1357,7 +1357,7 @@
                         </div>
                         <div class="form-group">
                             <label>Deduction</label>
-                            <input type="number" name="deduction" placeholder="Deduction Amount" step="0.01">
+                            <input type="number" name="deduction" placeholder="Deduction Amount" step="0.01" readonly>
                         </div>
                     </div>
                     
@@ -1372,7 +1372,7 @@
                         </div>
                         <div class="form-group">
                             <label>TDS Amount</label>
-                            <input type="number" name="tds" placeholder="TDS Amount" step="0.01">
+                            <input type="number" name="tds" placeholder="TDS Amount" step="0.01" readonly>
                         </div>
                     </div>
 
@@ -1832,7 +1832,7 @@
                         </div>
                         <div class="form-group">
                             <label>Deduction</label>
-                            <input type="number" name="deduction" placeholder="0.00" step="0.01">
+                            <input type="number" name="deduction" placeholder="0.00" step="0.01" readonly>
                         </div>
                         <div class="form-group">
                             <label>Patient Pay</label>
@@ -1846,7 +1846,7 @@
                         </div>
                         <div class="form-group">
                             <label>TDS Amount</label>
-                            <input type="number" name="tds" placeholder="0.00" step="0.01">
+                            <input type="number" name="tds" placeholder="0.00" step="0.01" readonly>
                         </div>
                         <div class="form-group">
                             <label>Payment Date</label>
@@ -2743,8 +2743,7 @@
             }
         }
 
-        function recalculateClaimAmounts() {
-            const form = document.getElementById('claimForm');
+        function recalculateClaimAmountsForForm(form) {
             if (!form) return;
 
             const totalBillInput = form.querySelector('[name="totalBill"]');
@@ -2764,19 +2763,19 @@
             const totalBill = parseAmount(totalBillInput);
             const approved = parseAmount(approvedInput);
             const discount = parseAmount(discountInput);
-            // If settlement amount field is empty, do not compute TDS/deduction (avoid showing Approved as Deduction)
             const settlementEmpty = !settlementAmountInput || String(settlementAmountInput.value).trim() === '';
-            const settlementAmount = settlementEmpty ? null : parseAmount(settlementAmountInput);
+            const settlementAmount = settlementEmpty ? 0 : parseAmount(settlementAmountInput);
 
             const patientPay = totalBill - approved - discount;
 
             if (patientPayInput) patientPayInput.value = patientPay.toFixed(2);
 
+            const calculatedTds = settlementAmount * 10 / 100;
             if (tdsInput) {
                 if (settlementEmpty) {
                     tdsInput.value = '';
                 } else {
-                    tdsInput.value = (settlementAmount * 10 / 100).toFixed(2);
+                    tdsInput.value = calculatedTds.toFixed(2);
                 }
             }
 
@@ -2784,11 +2783,41 @@
                 if (settlementEmpty) {
                     deductionInput.value = '';
                 } else {
-                    // Deduction should be Approved minus Settlement (do NOT subtract TDS here)
-                    const deduction = approved - settlementAmount;
+                    const deduction = settlementAmount - calculatedTds;
                     deductionInput.value = deduction.toFixed(2);
                 }
             }
+        }
+
+        function recalculateClaimAmounts() {
+            recalculateClaimAmountsForForm(document.getElementById('claimForm'));
+            recalculateClaimAmountsForForm(document.getElementById('claimModalForm'));
+        }
+
+        function computeClaimFinancials(claim) {
+            const parseAmountValue = (value) => {
+                if (value === undefined || value === null) return 0;
+                const numeric = parseFloat(String(value).replace(/[^0-9.-]/g, ''));
+                return Number.isNaN(numeric) ? 0 : numeric;
+            };
+
+            const settlementEmpty = String(claim.settlementAmount || '').trim() === '';
+            const settlementAmount = settlementEmpty ? 0 : parseAmountValue(claim.settlementAmount);
+            const totalBill = parseAmountValue(claim.totalBill);
+            const approved = parseAmountValue(claim.approved);
+            const discount = parseAmountValue(claim.discount);
+
+            if (!settlementEmpty) {
+                const tdsAmount = settlementAmount * 0.10;
+                const deductionAmount = settlementAmount - tdsAmount;
+                claim.tds = tdsAmount.toFixed(2);
+                claim.deduction = deductionAmount.toFixed(2);
+            } else {
+                claim.tds = '';
+                claim.deduction = '';
+            }
+
+            claim.patientPay = (totalBill - approved - discount).toFixed(2);
         }
         
         function setFormMode(isEdit) {
@@ -2943,6 +2972,7 @@
             // No existing match -> proceed with normal add
             const toAdd = Object.assign({}, claimFromForm);
             if (!toAdd.claimNo || toAdd.claimNo.trim() === '') toAdd.claimNo = generateClaimNo();
+            computeClaimFinancials(toAdd);
             claims.push(toAdd);
             localStorage.setItem('claims', JSON.stringify(claims));
             if (shouldCreateFolder) {
@@ -3031,6 +3061,8 @@
                     element.value = normalizedValue ?? '';
                 }
             });
+
+            recalculateClaimAmountsForForm(form);
         }
 
         function editClaim(index) {
@@ -3111,6 +3143,8 @@
                     element.value = normalizedValue ?? '';
                 }
             });
+
+            recalculateClaimAmountsForForm(form);
 
             // If this call is for re-admit, clear sensitive admission/payment fields
             if (skipOnReAdmit) {
@@ -4663,11 +4697,15 @@ ${letters}
         if (document.getElementById('modalTpa')) document.getElementById('modalTpa').addEventListener('change', populateBankDetailsFromTpa);
         if (document.getElementById('modalInsuranceCompany')) document.getElementById('modalInsuranceCompany').addEventListener('change', populateInsuranceAddressFromCompany);
         const claimForm = document.getElementById('claimForm');
-        ['totalBill', 'approved', 'discount', 'patientPay', 'settlementAmount', 'tds'].forEach((fieldName) => {
-            const field = claimForm.querySelector(`[name="${fieldName}"]`);
-            if (field) field.addEventListener('input', recalculateClaimAmounts);
+        [document.getElementById('claimForm'), document.getElementById('claimModalForm')].filter(Boolean).forEach((form) => {
+            ['totalBill', 'approved', 'discount', 'settlementAmount', 'tds'].forEach((fieldName) => {
+                const field = form.querySelector(`[name="${fieldName}"]`);
+                if (field) field.addEventListener('input', recalculateClaimAmounts);
+                if (field) field.addEventListener('change', recalculateClaimAmounts);
+            });
         });
-        claimForm.addEventListener('submit', addClaim);
+        if (claimForm) claimForm.addEventListener('submit', addClaim);
+        recalculateClaimAmounts();
 
         // Re-admission checkbox immediate action: if user checks it, attempt quick re-admit
         const readmitEl = document.getElementById('readmitCheckbox');
@@ -5145,6 +5183,9 @@ ${letters}
                     delete claimData[key];
                 }
             });
+
+            // Enforce consistent financial calculations before save
+            computeClaimFinancials(claimData);
 
             // Handle re-admission checkbox
             claimData.readmit = form.querySelector('input[name="readmit"]').checked ? 'Yes' : 'No';
