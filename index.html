@@ -1143,7 +1143,7 @@
                         <div class="dashboard-card-unit">₹</div>
                     </div>
                     <div class="dashboard-card">
-                        <div class="dashboard-card-label">Deduction</div>
+                        <div class="dashboard-card-label">Payment Recived</div>
                         <div class="dashboard-card-value amount" id="deductionAmount">0</div>
                         <div class="dashboard-card-unit">₹</div>
                     </div>
@@ -1355,8 +1355,8 @@
                             <input type="number" name="discount" placeholder="Discount Amount" step="0.01">
                         </div>
                         <div class="form-group">
-                            <label>Deduction</label>
-                            <input type="number" name="deduction" placeholder="Deduction Amount" step="0.01" readonly>
+                            <label>Payment Recived</label>
+                            <input type="number" name="deduction" placeholder="Payment Recived Amount" step="0.01" readonly>
                         </div>
                     </div>
                     
@@ -1563,10 +1563,10 @@
                                 <th data-col="totalBill">Total Bill</th>
                                 <th data-col="approved">Approved</th>
                                 <th data-col="discount">Discount</th>
-                                <th data-col="deduction">Deduction</th>
                                 <th data-col="patientPay">Patient Pay</th>
                                 <th data-col="settlementAmount">Settlement Amount</th>
                                 <th data-col="tds">TDS Amount</th>
+                                <th data-col="deduction">Payment Recived</th>
                                 <th data-col="paymentDate">Payment Date</th>
                                 <th data-col="utr">UTR</th>
                                 <th data-col="attenderName">Attender Name</th>
@@ -1830,7 +1830,7 @@
                             <input type="number" name="discount" placeholder="0.00" step="0.01">
                         </div>
                         <div class="form-group">
-                            <label>Deduction</label>
+                            <label>Payment Recived</label>
                             <input type="number" name="deduction" placeholder="0.00" step="0.01" readonly>
                         </div>
                         <div class="form-group">
@@ -2154,10 +2154,10 @@
             { key: 'totalBill', label: 'Total Bill' },
             { key: 'approved', label: 'Approved' },
             { key: 'discount', label: 'Discount' },
-            { key: 'deduction', label: 'Deduction' },
             { key: 'patientPay', label: 'Patient Pay' },
             { key: 'settlementAmount', label: 'Settlement Amount' },
             { key: 'tds', label: 'TDS Amount' },
+            { key: 'deduction', label: 'Payment Recived' },
             { key: 'paymentDate', label: 'Payment Date' },
             { key: 'utr', label: 'UTR' },
             { key: 'attenderName', label: 'Attender Name' },
@@ -3347,10 +3347,10 @@
                 'Total Bill',
                 'Approved',
                 'Discount',
-                'Deduction',
                 'Patient Pay',
                 'Settlement Amount',
                 'TDS Amount',
+                'Payment Recived',
                 'Payment Date',
                 'UTR',
                 'Attender Name',
@@ -3387,10 +3387,10 @@
                 'Total Bill': 'totalBill',
                 'Approved': 'approved',
                 'Discount': 'discount',
-                'Deduction': 'deduction',
                 'Patient Pay': 'patientPay',
                 'Settlement Amount': 'settlementAmount',
                 'TDS Amount': 'tds',
+                'Payment Recived': 'deduction',
                 'Payment Date': 'paymentDate',
                 'UTR': 'utr',
                 'Attender Name': 'attenderName',
@@ -3506,7 +3506,7 @@ Claim No: *${claim}*
 
 Discharge Approved Amount: *${approvedText}*
 
-Deduction: *${deductionText}*
+Payment Recived: *${deductionText}*
 
 Discount: *${discountText}*
 
@@ -4477,10 +4477,10 @@ ${letters}
                 'Total Bill',
                 'Approved',
                 'Discount',
-                'Deduction',
                 'Patient Pay',
                 'Settlement Amount',
                 'TDS Amount',
+                'Payment Recived',
                 'Payment Date',
                 'UTR',
                 'Attender Name',
@@ -4517,10 +4517,10 @@ ${letters}
                 'Total Bill': 'totalBill',
                 'Approved': 'approved',
                 'Discount': 'discount',
-                'Deduction': 'deduction',
                 'Patient Pay': 'patientPay',
                 'Settlement Amount': 'settlementAmount',
                 'TDS Amount': 'tds',
+                'Payment Recived': 'deduction',
                 'Payment Date': 'paymentDate',
                 'UTR': 'utr',
                 'Attender Name': 'attenderName',
@@ -5076,7 +5076,7 @@ ${letters}
                 ['Total Bill', claim.totalBill || '-'],
                 ['Approved', claim.approved || '-'],
                 ['Discount', claim.discount || '-'],
-                ['Deduction', claim.deduction || '-'],
+                ['Payment Recived', claim.deduction || '-'],
                 ['Patient Pay', claim.patientPay || '-'],
                 ['Settlement Amount', claim.settlementAmount || '-'],
                 ['TDS', claim.tds || '-'],
