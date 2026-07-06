@@ -1281,7 +1281,6 @@
                         <div class="form-group">
                             <label>Insurance Company</label>
                             <select id="insuranceCompany" name="insuranceCompany">
-                                <option value="">-- Choose Name --</option>
                                 <option>ICICI LOMBARD GENERAL INSURANCE CO. LTD</option>
                                 <option>IFFCO TOKIO GENERAL INSURANCE CO. LTD</option>
                                 <option>FUTURE GENERALI INDIA INSURANCE CO. LTD</option>
@@ -1719,8 +1718,7 @@
                         <div class="form-group">
                             <label>TPA/Insurance Name</label>
                             <select name="tpaName" id="modalTpa">
-                                <option value="">-- Choose --</option>
-                                <option>ADITYA BIRLA GENERAL INSURANCE</option>
+                                 <option>ADITYA BIRLA GENERAL INSURANCE</option>
                                 <option>FUTURE GENERALI INDIA INSURANCE CO. LTD</option>
                                 <option>SBI GENERAL INSURANCE</option>
                                 <option>MEDIASSIST TPA</option>
@@ -1777,6 +1775,7 @@
                                 <option>TATA AIG GENERAL INSURANCE CO. LTD</option>
                                 <option>RELIANCE GERENAL INSURANCE</option>
                                 <option>GENERALI CENTRAL INSURANCE CO.LTD</option>
+                                <option>ZURICH KOTAK GENERAL INSURANCE COMPANY (INDIA) LIMITED</option>
                                 <option>ADITYA BIRLA HEALTH INSURANCE</option>
                                 <option>MANIPAL CIGNA HEALTH INSURANCE COMPANY LIMITED</option>
                                 <option>GO DIGIT GENERAL INSURANCE COMPANY LIMITED</option>
@@ -5044,7 +5043,7 @@ ${letters}
             }
         });
 
-        render();
+        renderTable();
 
         // Details modal helpers
         function showDetails(index) {
@@ -5063,6 +5062,7 @@ ${letters}
                 ['IPD No', claim.ipdNo || '-'],
                 ['DOA', formatDateForDisplay(claim.doa)],
                 ['DOD', formatDateForDisplay(claim.dod)],
+                ['Employee ID', claim.empID || claim.empId || '-'],
                 ['Diagnosis', claim.diagnosis || '-'],
                 ['Surgery', claim.surgeryName || '-'],
                 ['Status', claim.status || '-'],
