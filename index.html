@@ -944,6 +944,71 @@
             background: #dee2e6;
         }
 
+        /* Success Popup Modal Styles */
+        .success-popup-overlay {
+            display: none;
+            position: fixed;
+            z-index: 5000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.3);
+            animation: fadeInOverlay 0.2s ease;
+        }
+
+        .success-popup-overlay.show {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        @keyframes fadeInOverlay {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .success-popup-container {
+            background: white;
+            padding: 40px 30px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            max-width: 320px;
+            animation: popupSlideIn 0.3s ease;
+        }
+
+        @keyframes popupSlideIn {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        .success-popup-icon {
+            width: 70px;
+            height: 70px;
+            background: #e8f5e9;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 40px;
+            color: #4caf50;
+        }
+
+        .success-popup-text {
+            font-size: 16px;
+            font-weight: 600;
+            color: #555;
+            line-height: 1.5;
+        }
+
         /* Details View Styles */
         .detail-field {
             display: flex;
@@ -1936,6 +2001,13 @@
             <button type="button" class="btn-primary" onclick="editFromDetails()">Edit</button>
         </div>
     </div>
+
+    <!-- Success Popup Modal -->
+    <div class="success-popup-overlay" id="successPopupOverlay"></div>
+    <div class="success-popup-container" id="successPopupContainer" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 5001;">
+        <div class="success-popup-icon">✓</div>
+        <div class="success-popup-text" id="successPopupText">Success!</div>
+    </div>
     
     <script>
         function makeEntries(names, details) {
@@ -2701,6 +2773,23 @@
             document.body.appendChild(notification);
             setTimeout(() => notification.remove(), 4000);
         }
+
+        function showSuccessPopup(message) {
+            const overlay = document.getElementById('successPopupOverlay');
+            const container = document.getElementById('successPopupContainer');
+            const textEl = document.getElementById('successPopupText');
+
+            if (!overlay || !container || !textEl) return;
+
+            textEl.textContent = message;
+            overlay.classList.add('show');
+            container.style.display = 'block';
+
+            setTimeout(() => {
+                overlay.classList.remove('show');
+                container.style.display = 'none';
+            }, 3000);
+        }
         
         function showAlert(message, type) {
             const alertBox = document.getElementById('alertBox');
@@ -2908,7 +2997,7 @@
                         showAlert('Your folder has been successfully created.', 'success');
                     }
                 }
-                showAlert('Claim updated successfully!', 'success');
+                showSuccessPopup('Patient Updated Successfully!');
                 document.getElementById('claimForm').reset();
                 setFormMode(false);
                 closeClaimForm();
@@ -2980,7 +3069,7 @@
                     showAlert('Your folder has been successfully created.', 'success');
                 }
             }
-            showAlert('Claim added successfully!', 'success');
+            showSuccessPopup('New Patient Added Successfully!');
             form.reset();
             setFormMode(false);
             closeClaimForm();
@@ -4706,6 +4795,46 @@ ${letters}
         if (claimForm) claimForm.addEventListener('submit', addClaim);
         recalculateClaimAmounts();
 
+        // Auto-open date pickers when their container is clicked (DOA, DOD, Courier Date)
+        function attachAutoOpenDatePickers() {
+            try {
+                const names = ['doa', 'dod', 'courierDate'];
+                names.forEach(name => {
+                    document.querySelectorAll(`input[name="${name}"]`).forEach(input => {
+                        const wrapper = input.closest('.form-group') || input.parentElement;
+                        if (!wrapper) return;
+                        if (!wrapper.dataset.autoDateAttached) {
+                            wrapper.addEventListener('click', (e) => {
+                                // if user clicked an interactive control inside input, do nothing special
+                                if (e.target === input) {
+                                    try { input.showPicker && input.showPicker(); } catch (err) {}
+                                    input.focus();
+                                    return;
+                                }
+                                try { input.showPicker && input.showPicker(); } catch (err) {}
+                                input.focus();
+                            });
+                            wrapper.dataset.autoDateAttached = '1';
+                        }
+                        const label = wrapper.querySelector('label');
+                        if (label && !label.dataset.autoDateAttached) {
+                            label.addEventListener('click', (ev) => {
+                                ev.preventDefault();
+                                try { input.showPicker && input.showPicker(); } catch (err) {}
+                                input.focus();
+                            });
+                            label.dataset.autoDateAttached = '1';
+                        }
+                    });
+                });
+            } catch (e) {
+                console.warn('attachAutoOpenDatePickers error', e);
+            }
+        }
+
+        // initialize auto-open behavior
+        attachAutoOpenDatePickers();
+
         // Re-admission checkbox immediate action: if user checks it, attempt quick re-admit
         const readmitEl = document.getElementById('readmitCheckbox');
         if (readmitEl) {
@@ -5202,11 +5331,11 @@ ${letters}
                 // Update existing claim
                 claims[editingIndex] = { ...claims[editingIndex], ...claimData };
                 editingIndex = -1;
-                showAlert('Claim updated successfully!', 'success');
+                showSuccessPopup('Patient Updated Successfully!');
             } else {
                 // Add new claim
                 claims.push(claimData);
-                showAlert('Claim added successfully!', 'success');
+                showSuccessPopup('New Patient Added Successfully!');
             }
 
             localStorage.setItem('claims', JSON.stringify(claims));
