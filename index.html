@@ -954,18 +954,13 @@
             width: 100%;
             height: 100%;
             background-color: rgba(0, 0, 0, 0.3);
-            animation: fadeInOverlay 0.2s ease;
+            animation: fadeInOverlay 0.3s ease;
         }
 
         .success-popup-overlay.show {
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-
-        @keyframes fadeInOverlay {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
 
         .success-popup-container {
@@ -975,18 +970,9 @@
             text-align: center;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
             max-width: 320px;
-            animation: popupSlideIn 0.3s ease;
-        }
-
-        @keyframes popupSlideIn {
-            from {
-                opacity: 0;
-                transform: scale(0.8);
-            }
-            to {
-                opacity: 1;
-                transform: scale(1);
-            }
+            animation: fadeIn 0.3s ease;
+            transform: translate(-50%, -50%);
+            transition: zoom 0.1s ease;
         }
 
         .success-popup-icon {
@@ -1217,11 +1203,7 @@
                         <div class="dashboard-card-value amount" id="patientPayAmount">0</div>
                         <div class="dashboard-card-unit">₹</div>
                     </div>
-                    <div class="dashboard-card">
-                        <div class="dashboard-card-label">Settlement Amount</div>
-                        <div class="dashboard-card-value amount" id="settlementAmount">0</div>
-                        <div class="dashboard-card-unit">₹</div>
-                    </div>
+                    <!-- Settlement Amount card removed -->
                 </div>
             </div>
             
@@ -2775,6 +2757,28 @@
             setTimeout(() => notification.remove(), 4000);
         }
 
+        function getStatusSuccessMessage(status, mode = 'save') {
+            const normalized = String(status || '').trim().toLowerCase();
+
+            if (normalized === 'settled') {
+                return 'Payment Settled successfully';
+            }
+            if (normalized === 'pending') {
+                return 'Payment Pending updated';
+            }
+            if (normalized === 'initial approved') {
+                return 'Initial Approved updated';
+            }
+            if (normalized === 'discharge approved') {
+                return 'Patient Discharge Approved successfully';
+            }
+            if (normalized === 'rejected' || normalized === 'denial') {
+                return 'Ab Gya Beta To Rejected successfully';
+            }
+
+            return mode === 'update' ? 'Patient Record Updated Successfully!' : 'New Patient Admitted Successfully!';
+        }
+
         function showSuccessPopup(message) {
             const overlay = document.getElementById('successPopupOverlay');
             const container = document.getElementById('successPopupContainer');
@@ -2998,7 +3002,7 @@
                         showAlert('Your folder has been successfully created.', 'success');
                     }
                 }
-                showSuccessPopup('Patient Updated Successfully!');
+                showSuccessPopup(getStatusSuccessMessage(claimFromForm.status, 'update'));
                 document.getElementById('claimForm').reset();
                 setFormMode(false);
                 closeClaimForm();
@@ -3070,7 +3074,7 @@
                     showAlert('Your folder has been successfully created.', 'success');
                 }
             }
-            showSuccessPopup('New Patient Added Successfully!');
+            showSuccessPopup(getStatusSuccessMessage(toAdd.status, 'save'));
             form.reset();
             setFormMode(false);
             closeClaimForm();
@@ -3547,21 +3551,22 @@
             const settlementAmountTotal = claims.reduce((sum, c) => sum + (parseFloat(c.settlementAmount) || 0), 0);
             const settledAmount = claims.filter(c => c.status === 'Settled').reduce((sum, c) => sum + (parseFloat(c.settlementAmount) || 0), 0);
             
-            // Update dashboard
-            document.getElementById('totalPatients').textContent = totalPatients;
-            document.getElementById('admitted').textContent = admitted;
-            document.getElementById('initialApproved').textContent = initialApproved;
-            document.getElementById('discharge').textContent = discharge;
-            document.getElementById('dischargeApproved').textContent = dischargeApproved;
-            document.getElementById('denial').textContent = denial;
-            document.getElementById('pending').textContent = pending;
-            document.getElementById('settled').textContent = '₹ ' + settledAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            document.getElementById('totalBill').textContent = '₹ ' + totalBill.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            document.getElementById('approvedAmount').textContent = '₹ ' + approvedAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            document.getElementById('discountAmount').textContent = '₹ ' + discountAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            document.getElementById('deductionAmount').textContent = '₹ ' + deductionAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            document.getElementById('patientPayAmount').textContent = '₹ ' + patientPayAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-            document.getElementById('settlementAmount').textContent = '₹ ' + settlementAmountTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            // Update dashboard (guard elements in case some cards were removed)
+            const setIf = (id, value) => { const el = document.getElementById(id); if (el) el.textContent = value; };
+            setIf('totalPatients', totalPatients);
+            setIf('admitted', admitted);
+            setIf('initialApproved', initialApproved);
+            setIf('discharge', discharge);
+            setIf('dischargeApproved', dischargeApproved);
+            setIf('denial', denial);
+            setIf('pending', pending);
+            setIf('settled', '₹ ' + settledAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+            setIf('totalBill', '₹ ' + totalBill.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+            setIf('approvedAmount', '₹ ' + approvedAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+            setIf('discountAmount', '₹ ' + discountAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+            setIf('deductionAmount', '₹ ' + deductionAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+            setIf('patientPayAmount', '₹ ' + patientPayAmount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+            setIf('settlementAmount', '₹ ' + settlementAmountTotal.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
         }
         
         function normalizeMobileNumber(mobile) {
@@ -5332,11 +5337,11 @@ ${letters}
                 // Update existing claim
                 claims[editingIndex] = { ...claims[editingIndex], ...claimData };
                 editingIndex = -1;
-                showSuccessPopup('Patient Updated Successfully!');
+                showSuccessPopup(getStatusSuccessMessage(claimData.status, 'update'));
             } else {
                 // Add new claim
                 claims.push(claimData);
-                showSuccessPopup('New Patient Added Successfully!');
+                showSuccessPopup(getStatusSuccessMessage(claimData.status, 'save'));
             }
 
             localStorage.setItem('claims', JSON.stringify(claims));
