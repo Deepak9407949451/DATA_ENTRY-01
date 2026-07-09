@@ -102,6 +102,17 @@
             border-color: #667eea;
             box-shadow: 0 0 5px rgba(102, 126, 234, 0.3);
         }
+
+        .form-group input[type="date"] {
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+
+        .form-group input[type="date"]::-webkit-calendar-picker-indicator {
+            display: none;
+            -webkit-appearance: none;
+        }
         
         .form-group textarea {
             resize: vertical;
@@ -158,6 +169,33 @@
         .cover-letter-btn:hover {
             background: #5a2ea6;
         }
+
+        .import-action-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 10px;
+            align-items: center;
+        }
+
+        .import-action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 600;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+
+        .import-action-btn .icon {
+            font-size: 14px;
+        }
+
+        .import-action-btn:hover {
+            transform: translateY(-1px);
+        }
         
         .table-section {
             margin-top: 30px;
@@ -170,6 +208,30 @@
             padding-bottom: 10px;
             border-bottom: 2px solid #667eea;
         }
+
+        .view-toggle {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+
+        .view-toggle button {
+            padding: 6px 10px;
+            font-size: 12px;
+            border-radius: 999px;
+            border: 1px solid #d3dae3;
+            background: white;
+            color: #333;
+            min-width: 96px;
+        }
+
+        .view-toggle button.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-color: #667eea;
+        }
         
         .table-wrapper {
             overflow: auto;
@@ -177,6 +239,81 @@
             border: 1px solid #c2d0e0;
             box-shadow: inset 0 0 0 1px #e0e7ef;
             max-height: 520px;
+        }
+
+        .claims-grid-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 16px;
+            padding: 8px 0;
+        }
+
+        .claim-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f7fbff 100%);
+            border: 1px solid #e3e9ef;
+            border-radius: 12px;
+            padding: 16px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.06);
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .claim-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .claim-card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            gap: 8px;
+        }
+
+        .claim-card-title {
+            font-size: 16px;
+            font-weight: 700;
+            color: #274060;
+        }
+
+        .claim-card-badge {
+            padding: 5px 8px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 700;
+            color: white;
+            white-space: nowrap;
+        }
+
+        .claim-card-body {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            font-size: 13px;
+            color: #4b5b6d;
+        }
+
+        .claim-card-body strong {
+            color: #233244;
+        }
+
+        .claim-card-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            align-items: center;
+            margin-top: 4px;
+        }
+
+        .claim-card-empty {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+            border: 1px dashed #cfd8e3;
+            border-radius: 10px;
+            background: #f8fbff;
         }
         
         table {
@@ -755,6 +892,7 @@
             display: none;
             flex-direction: column;
             animation: slideIn 0.3s ease;
+            overflow-anchor: none;
         }
 
         @keyframes slideIn {
@@ -847,6 +985,7 @@
             overflow-y: auto;
             padding: 25px;
             background: white;
+            overflow-anchor: none;
         }
 
         .modal-tab-content {
@@ -1214,13 +1353,14 @@
             </div>
             <div class="collapsible-content" id="importSection" style="display: none;">
                 <input type="file" id="fileInput" accept=".csv,.xlsx,.xls" />
-                <button class="btn-primary btn-import" onclick="importFile()">Import CSV/Excel</button>
-                <button type="button" class="btn-secondary" onclick="document.getElementById('fileInput').click()" style="background: #17a2b8; color: white;">Import Single File</button>
-                <button class="btn-primary btn-export" onclick="exportToCSV()">Export to CSV</button>
-                <button id="syncBtn" class="btn-primary" onclick="syncToGoogleSheet(true)">Sync to Google Sheets</button>
-                <button id="loadSheetBtn" class="btn-secondary" onclick="loadFromGoogleSheet()">⬇️ Load from Google Sheet</button>
-                <button type="button" class="btn-secondary" onclick="toggleInvoiceSection()">🧾 Invoice Calculator</button>
-                <button class="btn-secondary" style="padding: 6px 10px; font-size: 12px; margin-left: 6px;" onclick="openSpreadsheet()">📅Email</button>
+                <div class="import-action-row">
+                    <button class="btn-primary btn-import import-action-btn" onclick="importFile()"><span class="icon">📥</span> Import CSV/Excel</button>
+                    <button type="button" class="btn-secondary import-action-btn" onclick="document.getElementById('fileInput').click()" style="background: #17a2b8; color: white;"><span class="icon">📄</span> Import Single File</button>
+                    <button class="btn-primary btn-export import-action-btn" onclick="exportToCSV()"><span class="icon">⬆️</span> Export to CSV</button>
+                    <button id="loadSheetBtn" class="btn-secondary import-action-btn" onclick="loadFromGoogleSheet()"><span class="icon">📊</span> Load From Google Sheet</button>
+                    <button type="button" class="btn-secondary import-action-btn" onclick="toggleInvoiceSection()"><span class="icon">🧾</span> Invoice Calculator</button>
+                    <button class="btn-secondary import-action-btn" onclick="openSpreadsheet()"><span class="icon">✉️</span> Email</button>
+                </div>
                 <small style="width: 100%; color: #666; font-size: 12px;">Supported formats: CSV, XLSX. First row should contain headers matching the field names.</small>
             </div>
             
@@ -1235,6 +1375,7 @@
                 <input type="date" id="doaToDate" placeholder="To Date" style="padding: 8px; border: 1px solid #ffc107; border-radius: 5px;">
                 <button class="btn-primary" style="background: #ffc107; color: #333; padding: 8px 15px;" onclick="applyDateFilter()">Apply Filter</button>
                 <button class="btn-primary" style="background: #6c757d; color: white; padding: 8px 15px;" onclick="clearDateFilter()">Clear Filter</button>
+                <button id="syncBtn" class="btn-primary" style="background: #007bff; color: white; padding: 8px 15px;" onclick="syncToGoogleSheet(true)">🔄 Sync to Google Sheet</button>
                 <button class="btn-primary" id="exportDateFilterBtn" style="background: #28a745; color: white; padding: 8px 15px; display: none;" onclick="exportFilteredData()">📥 Export Filtered</button>
                 <span id="dateFilterStatus" style="margin-left: 15px; font-size: 12px; color: #666;"></span>
             </div>
@@ -1740,11 +1881,15 @@
                         <button type="button" class="btn-secondary" id="columnPickerButton">Columns ▾</button>
                         <div class="column-picker-panel" id="columnPickerPanel"></div>
                     </div>
+                    <div class="view-toggle">
+                        <button type="button" data-view="table" onclick="setClaimsView('table')">📋 Table View</button>
+                        <button type="button" data-view="grid" onclick="setClaimsView('grid')">🧩 Grid View</button>
+                    </div>
                     <button type="button" class="btn-primary" onclick="openClaimForm()">+ Add Claim</button>
-                    <button type="button" class="btn-secondary cover-letter-btn" onclick="generateCoverLetter()">📄 Cover Letter</button>
+                    <button id="coverLetterBtn" type="button" class="btn-secondary cover-letter-btn" style="display: none;" onclick="generateCoverLetter()">📄 Cover Letter</button>
                     <button id="deleteSelectedBtn" class="btn-danger" style="padding: 12px 20px; background: #dc3545; display: none;" onclick="deleteSelected()">🗑️ Delete Selected</button>
                 </div>
-                <div class="table-wrapper">
+                <div class="table-wrapper" id="claimsTableWrapper">
                     <table id="claimsTable">
                         <thead>
                             <tr>
@@ -1796,6 +1941,7 @@
                     </table>
                 </div>
                 <div class="pagination-controls" id="paginationControls"></div>
+                <div id="claimsGridView" class="claims-grid-view" style="display:none;"></div>
             </div>
         </div>
     </div>
@@ -2391,6 +2537,7 @@
         const PAGE_SIZES = [10, 25, 50, 100];
         let currentPage = 1;
         let pageSize = 25;
+        let currentClaimsView = 'table';
         let editingIndex = -1;
         let currentDetailsIndex = -1;
         let selectedIndices = new Set();
@@ -2602,7 +2749,11 @@
 
         const tbody = document.getElementById('invoice-rows');
 
-        addRow();
+        function renderInvoiceRows() {
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            addRow();
+        }
 
         function addRow() {
             const currentRows = tbody ? tbody.querySelectorAll('tr').length : 0;
@@ -2633,6 +2784,8 @@
                 alert("At least one transactional row tracking baseline must remain open.");
             }
         }
+
+        renderInvoiceRows();
 
         function updateSerialNumbers() {
             document.querySelectorAll('.row-sl-no').forEach((cell, index) => {
@@ -4192,8 +4345,53 @@ ${letters}
             window.open(url, '_blank');
         }
 
+        function setClaimsView(view) {
+            currentClaimsView = view;
+            const toggleButtons = document.querySelectorAll('.view-toggle button');
+            toggleButtons.forEach(btn => {
+                const isActive = btn.textContent.includes(view === 'grid' ? 'Grid' : 'Table');
+                btn.classList.toggle('active', isActive);
+            });
+            const tableWrapper = document.getElementById('claimsTableWrapper');
+            const gridView = document.getElementById('claimsGridView');
+            if (tableWrapper && gridView) {
+                tableWrapper.style.display = view === 'table' ? '' : 'none';
+                gridView.style.display = view === 'grid' ? 'grid' : 'none';
+            }
+            renderTable();
+        }
+
+        function setClaimsView(view) {
+            currentClaimsView = view;
+            const tableButton = document.querySelector('.view-toggle button[data-view="table"]');
+            const gridButton = document.querySelector('.view-toggle button[data-view="grid"]');
+            const tableWrapper = document.getElementById('claimsTableWrapper');
+            const gridView = document.getElementById('claimsGridView');
+            const columnPicker = document.querySelector('.column-picker');
+
+            if (tableButton && gridButton) {
+                const showTable = view === 'table';
+                tableButton.style.display = showTable ? 'none' : 'inline-flex';
+                gridButton.style.display = showTable ? 'inline-flex' : 'none';
+                tableButton.classList.toggle('active', showTable);
+                gridButton.classList.toggle('active', !showTable);
+            }
+
+            if (columnPicker) {
+                columnPicker.style.display = view === 'table' ? 'inline-block' : 'none';
+            }
+
+            if (tableWrapper && gridView) {
+                tableWrapper.style.display = view === 'table' ? '' : 'none';
+                gridView.style.display = view === 'grid' ? 'grid' : 'none';
+            }
+
+            renderTable();
+        }
+
         function renderTable(filteredClaims = null) {
             const tableBody = document.getElementById('tableBody');
+            const gridView = document.getElementById('claimsGridView');
             const claimsToRender = filteredClaims || claims;
             
             const totalItems = claimsToRender.length;
@@ -4205,7 +4403,12 @@ ${letters}
 
             if (claimsToRender.length === 0) {
                 const colspan = Math.max(visibleColumns.size, 1);
-                tableBody.innerHTML = `<tr class="no-data"><td colspan="${colspan}">No claims found.</td></tr>`;
+                if (tableBody) {
+                    tableBody.innerHTML = `<tr class="no-data"><td colspan="${colspan}">No claims found.</td></tr>`;
+                }
+                if (gridView) {
+                    gridView.innerHTML = '<div class="claim-card-empty">No claims found.</div>';
+                }
                 updatePaginationControls(0, 1);
                 return;
             }
@@ -4216,59 +4419,91 @@ ${letters}
             const includeColumn = key => visibleColumns.has(key);
             const renderCell = (key, content) => includeColumn(key) ? `<td>${content}</td>` : '';
             
-            tableBody.innerHTML = paginatedClaims.map((claim, displayIndex) => {
-                const actualIndex = claims.indexOf(claim);
-                const isChecked = selectedIndices.has(actualIndex);
-                return `
-                <tr>
-                        ${renderCell('action', `
-                            <div class="action-icons">
-                                <input type="checkbox" onchange="toggleSelect(${actualIndex}, this)" ${isChecked ? 'checked' : ''}>
-                                <button class="icon-btn view" title="View" onclick="showDetails(${actualIndex})"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="none"><circle cx="12" cy="12" r="11" fill="#C4A57B"/><circle cx="12" cy="12" r="9.5" fill="#003DA5"/><circle cx="12" cy="12" r="7.5" fill="white"/><circle cx="12" cy="12" r="5.5" fill="#00B4D8"/><circle cx="12" cy="12" r="3" fill="black"/></svg></button>
-                                <button class="icon-btn edit" title="Edit" onclick="editClaim(${actualIndex})">✎</button>
-                                <button class="icon-btn delete" title="Delete" onclick="deleteClaim(${actualIndex})"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg></button>
-                                <button class="icon-btn whatsapp" title="WhatsApp" onclick="sendWhatsAppByIndex(${actualIndex})"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.031-.967-.273-.099-.472-.149-.671.149-.198.297-.768.967-.941 1.166-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.149-.174.199-.298.298-.497.099-.2.05-.372-.025-.521-.075-.149-.671-1.61-.92-2.206-.242-.579-.487-.5-.671-.509-.174-.008-.372-.01-.571-.01-.198 0-.521.074-.792.372-.271.298-1.033 1.008-1.033 2.459 0 1.451 1.058 2.855 1.205 3.054.147.198 2.084 3.18 5.055 4.464.705.304 1.255.485 1.684.618.708.225 1.352.193 1.863.118.569-.085 1.758-.719 2.007-1.414.249-.695.249-1.287.174-1.414-.075-.127-.273-.198-.57-.347m-5.38 7.148a9.066 9.066 0 0 1-4.6-1.25A10.56 10.56 0 0 1 3.5 12.18C3.5 7.03 7.53 3 12.68 3c2.94 0 5.69 1.15 7.76 3.23A10.55 10.55 0 0 1 23.5 12.18c0 5.15-4.03 9.18-9.18 9.18M12.68 1.5C6.43 1.5 1.5 6.43 1.5 12.68c0 2.2.6 4.32 1.74 6.16L1.5 22.5l3.8-1.7A10.88 10.88 0 0 0 12.68 23.87c6.25 0 11.18-4.93 11.18-11.18C23.87 6.43 18.94 1.5 12.68 1.5"></path></svg></button>
+            if (tableBody) {
+                tableBody.innerHTML = paginatedClaims.map((claim, displayIndex) => {
+                    const actualIndex = claims.indexOf(claim);
+                    const isChecked = selectedIndices.has(actualIndex);
+                    return `
+                    <tr>
+                            ${renderCell('action', `
+                                <div class="action-icons">
+                                    <input type="checkbox" onchange="toggleSelect(${actualIndex}, this)" ${isChecked ? 'checked' : ''}>
+                                    <button class="icon-btn view" title="View" onclick="showDetails(${actualIndex})"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="none"><circle cx="12" cy="12" r="11" fill="#C4A57B"/><circle cx="12" cy="12" r="9.5" fill="#003DA5"/><circle cx="12" cy="12" r="7.5" fill="white"/><circle cx="12" cy="12" r="5.5" fill="#00B4D8"/><circle cx="12" cy="12" r="3" fill="black"/></svg></button>
+                                    <button class="icon-btn edit" title="Edit" onclick="editClaim(${actualIndex})">✎</button>
+                                    <button class="icon-btn delete" title="Delete" onclick="deleteClaim(${actualIndex})" style="display: ${isChecked ? 'inline-flex' : 'none'};"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path></svg></button>
+                                    <button class="icon-btn whatsapp" title="WhatsApp" onclick="sendWhatsAppByIndex(${actualIndex})"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.031-.967-.273-.099-.472-.149-.671.149-.198.297-.768.967-.941 1.166-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.149-.174.199-.298.298-.497.099-.2.05-.372-.025-.521-.075-.149-.671-1.61-.92-2.206-.242-.579-.487-.5-.671-.509-.174-.008-.372-.01-.571-.01-.198 0-.521.074-.792.372-.271.298-1.033 1.008-1.033 2.459 0 1.451 1.058 2.855 1.205 3.054.147.198 2.084 3.18 5.055 4.464.705.304 1.255.485 1.684.618.708.225 1.352.193 1.863.118.569-.085 1.758-.719 2.007-1.414.249-.695.249-1.287.174-1.414-.075-.127-.273-.198-.57-.347m-5.38 7.148a9.066 9.066 0 0 1-4.6-1.25A10.56 10.56 0 0 1 3.5 12.18C3.5 7.03 7.53 3 12.68 3c2.94 0 5.69 1.15 7.76 3.23A10.55 10.55 0 0 1 23.5 12.18c0 5.15-4.03 9.18-9.18 9.18M12.68 1.5C6.43 1.5 1.5 6.43 1.5 12.68c0 2.2.6 4.32 1.74 6.16L1.5 22.5l3.8-1.7A10.88 10.88 0 0 0 12.68 23.87c6.25 0 11.18-4.93 11.18-11.18C23.87 6.43 18.94 1.5 12.68 1.5"></path></svg></button>
+                                </div>
+                            `)}
+                            ${renderCell('sNo', pageStart + displayIndex + 1)}
+                            ${renderCell('patientName', claim.patientName || '-')}
+                            ${renderCell('uhid', claim.uhid || '-')}
+                            ${renderCell('mobileNumber', claim.mobileNumber || '-')}
+                            ${renderCell('insuranceLimit', claim.insuranceLimit || '-')}
+                            ${renderCell('ipdNo', claim.ipdNo || '-')}
+                            ${renderCell('doa', formatDateForDisplay(claim.doa))}
+                            ${renderCell('dod', formatDateForDisplay(claim.dod))}
+                            ${renderCell('tpaName', claim.tpaName || '-')}
+                            ${renderCell('insuranceCompany', claim.insuranceCompany || '-')}
+                            ${renderCell('insuranceID', claim.insuranceID || '-')}
+                            ${renderCell('claimNo', claim.claimNo || '-')}
+                            ${renderCell('policyNumber', claim.policyNumber || '-')}
+                            ${renderCell('empID', claim.empID || '-')}
+                            ${renderCell('billInvoiceNo', claim.billInvoiceNo || '-')}
+                            ${renderCell('totalBill', claim.totalBill || '-')}
+                            ${renderCell('approved', claim.approved || '-')}
+                            ${renderCell('discount', claim.discount || '-')}
+                            ${renderCell('deduction', claim.deduction || '-')}
+                            ${renderCell('patientPay', claim.patientPay || '-')}
+                            ${renderCell('settlementAmount', claim.settlementAmount || '-')}
+                            ${renderCell('tds', claim.tds || '-')}
+                            ${renderCell('paymentDate', formatDateForDisplay(claim.paymentDate || claim.payment_date || claim['Payment Date'] || claim['payment date'] || claim['payment/utr'] || claim['Payment/UTR']))}
+                            ${renderCell('utr', claim.utr || '-')}
+                            ${renderCell('attenderName', claim.attenderName || '-')}
+                            ${renderCell('relation', claim.relation || '-')}
+                            ${renderCell('insuranceAddress', claim.insuranceAddress || '-')}
+                            ${renderCell('bankName', claim.bankName || '-')}
+                            ${renderCell('bankAccountNo', claim.bankAccountNo || '-')}
+                            ${renderCell('ifscCode', claim.ifscCode || '-')}
+                            ${renderCell('bankAddress', claim.bankAddress || '-')}
+                            ${renderCell('courierDetails', claim.courierDetails || '-')}
+                            ${renderCell('courierDate', claim.courierDate || '-')}
+                            ${renderCell('diagnosis', claim.diagnosis || '-')}
+                            ${renderCell('surgeryName', claim.surgeryName || '-')}
+                            ${renderCell('remark', claim.remark || '-')}
+                            ${renderCell('status', `<span style="padding: 4px 8px; border-radius: 3px; background: ${getStatusColor(claim.status)}; color: white; font-size: 11px;">${claim.status || '-'}</span>`)}
+                        </tr>
+                `}).join('');
+            }
+
+            if (gridView) {
+                gridView.innerHTML = paginatedClaims.map((claim, displayIndex) => {
+                    const actualIndex = claims.indexOf(claim);
+                    const isChecked = selectedIndices.has(actualIndex);
+                    return `
+                        <div class="claim-card">
+                            <div class="claim-card-header">
+                                <div class="claim-card-title">${claim.patientName || 'Unnamed Patient'}</div>
+                                <span class="claim-card-badge" style="background:${getStatusColor(claim.status)};">${claim.status || 'Pending'}</span>
                             </div>
-                        `)}
-                        ${renderCell('sNo', pageStart + displayIndex + 1)}
-                        ${renderCell('patientName', claim.patientName || '-')}
-                        ${renderCell('uhid', claim.uhid || '-')}
-                        ${renderCell('mobileNumber', claim.mobileNumber || '-')}
-                        ${renderCell('insuranceLimit', claim.insuranceLimit || '-')}
-                        ${renderCell('ipdNo', claim.ipdNo || '-')}
-                        ${renderCell('doa', formatDateForDisplay(claim.doa))}
-                        ${renderCell('dod', formatDateForDisplay(claim.dod))}
-                        ${renderCell('tpaName', claim.tpaName || '-')}
-                        ${renderCell('insuranceCompany', claim.insuranceCompany || '-')}
-                        ${renderCell('insuranceID', claim.insuranceID || '-')}
-                        ${renderCell('claimNo', claim.claimNo || '-')}
-                        ${renderCell('policyNumber', claim.policyNumber || '-')}
-                        ${renderCell('empID', claim.empID || '-')}
-                        ${renderCell('billInvoiceNo', claim.billInvoiceNo || '-')}
-                        ${renderCell('totalBill', claim.totalBill || '-')}
-                        ${renderCell('approved', claim.approved || '-')}
-                        ${renderCell('discount', claim.discount || '-')}
-                        ${renderCell('deduction', claim.deduction || '-')}
-                        ${renderCell('patientPay', claim.patientPay || '-')}
-                        ${renderCell('settlementAmount', claim.settlementAmount || '-')}
-                        ${renderCell('tds', claim.tds || '-')}
-                        ${renderCell('paymentDate', formatDateForDisplay(claim.paymentDate || claim.payment_date || claim['Payment Date'] || claim['payment date'] || claim['payment/utr'] || claim['Payment/UTR']))}
-                        ${renderCell('utr', claim.utr || '-')}
-                        ${renderCell('attenderName', claim.attenderName || '-')}
-                        ${renderCell('relation', claim.relation || '-')}
-                        ${renderCell('insuranceAddress', claim.insuranceAddress || '-')}
-                        ${renderCell('bankName', claim.bankName || '-')}
-                        ${renderCell('bankAccountNo', claim.bankAccountNo || '-')}
-                        ${renderCell('ifscCode', claim.ifscCode || '-')}
-                        ${renderCell('bankAddress', claim.bankAddress || '-')}
-                        ${renderCell('courierDetails', claim.courierDetails || '-')}
-                        ${renderCell('courierDate', claim.courierDate || '-')}
-                        ${renderCell('diagnosis', claim.diagnosis || '-')}
-                        ${renderCell('surgeryName', claim.surgeryName || '-')}
-                        ${renderCell('remark', claim.remark || '-')}
-                        ${renderCell('status', `<span style="padding: 4px 8px; border-radius: 3px; background: ${getStatusColor(claim.status)}; color: white; font-size: 11px;">${claim.status || '-'}</span>`)}
-                    </tr>
-            `}).join('');
+                            <div class="claim-card-body">
+                                <div><strong>UHID:</strong> ${claim.uhid || '-'}</div>
+                                <div><strong>TPA:</strong> ${claim.tpaName || '-'}</div>
+                                <div><strong>DOA:</strong> ${formatDateForDisplay(claim.doa)}</div>
+                                <div><strong>Bill:</strong> ${claim.totalBill || '-'}</div>
+                                <div><strong>Approved:</strong> ${claim.approved || '-'}</div>
+                                <div><strong>Patient Pay:</strong> ${claim.patientPay || '-'}</div>
+                            </div>
+                            <div class="claim-card-actions">
+                                <input type="checkbox" onchange="toggleSelect(${actualIndex}, this)" ${isChecked ? 'checked' : ''}>
+                                <button class="icon-btn view" title="View" onclick="showDetails(${actualIndex})">👁️</button>
+                                <button class="icon-btn edit" title="Edit" onclick="editClaim(${actualIndex})">✎</button>
+                                <button class="icon-btn delete" title="Delete" onclick="deleteClaim(${actualIndex})" style="display: ${isChecked ? 'inline-flex' : 'none'};">🗑️</button>
+                                <button class="icon-btn whatsapp" title="WhatsApp" onclick="sendWhatsAppByIndex(${actualIndex})">💬</button>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
             updateHeaderVisibility();
             updatePaginationControls(totalItems, totalPages);
         }
@@ -4820,6 +5055,7 @@ ${letters}
                 document.getElementById('selectAllCheckbox').checked = false;
             }
             updateDeleteButton();
+            renderTable();
         }
         
         function selectAll(checkbox) {
@@ -4832,11 +5068,18 @@ ${letters}
         
         function updateDeleteButton() {
             const btn = document.getElementById('deleteSelectedBtn');
+            const coverLetterBtn = document.getElementById('coverLetterBtn');
             if (selectedIndices.size > 0) {
                 btn.style.display = 'block';
                 btn.textContent = `🗑️ Delete Selected (${selectedIndices.size})`;
+                if (coverLetterBtn) {
+                    coverLetterBtn.style.display = 'inline-block';
+                }
             } else {
                 btn.style.display = 'none';
+                if (coverLetterBtn) {
+                    coverLetterBtn.style.display = 'none';
+                }
             }
         }
         
@@ -4945,45 +5188,9 @@ ${letters}
         if (claimForm) claimForm.addEventListener('submit', addClaim);
         recalculateClaimAmounts();
 
-        // Auto-open date pickers when their container is clicked (DOA, DOD, Courier Date)
-        function attachAutoOpenDatePickers() {
-            try {
-                const names = ['doa', 'dod', 'courierDate'];
-                names.forEach(name => {
-                    document.querySelectorAll(`input[name="${name}"]`).forEach(input => {
-                        const wrapper = input.closest('.form-group') || input.parentElement;
-                        if (!wrapper) return;
-                        if (!wrapper.dataset.autoDateAttached) {
-                            wrapper.addEventListener('click', (e) => {
-                                // if user clicked an interactive control inside input, do nothing special
-                                if (e.target === input) {
-                                    try { input.showPicker && input.showPicker(); } catch (err) {}
-                                    input.focus();
-                                    return;
-                                }
-                                try { input.showPicker && input.showPicker(); } catch (err) {}
-                                input.focus();
-                            });
-                            wrapper.dataset.autoDateAttached = '1';
-                        }
-                        const label = wrapper.querySelector('label');
-                        if (label && !label.dataset.autoDateAttached) {
-                            label.addEventListener('click', (ev) => {
-                                ev.preventDefault();
-                                try { input.showPicker && input.showPicker(); } catch (err) {}
-                                input.focus();
-                            });
-                            label.dataset.autoDateAttached = '1';
-                        }
-                    });
-                });
-            } catch (e) {
-                console.warn('attachAutoOpenDatePickers error', e);
-            }
-        }
-
-        // initialize auto-open behavior
-        attachAutoOpenDatePickers();
+        // Keep the modal stable while typing by letting the browser handle focus naturally.
+        // This avoids forced scrolling and picker behavior that could shift the screen.
+        setupModalTabNavigation();
 
         // Re-admission checkbox immediate action: if user checks it, attempt quick re-admit
         const readmitEl = document.getElementById('readmitCheckbox');
@@ -5025,6 +5232,7 @@ ${letters}
             });
         }
 
+        setClaimsView(currentClaimsView || 'table');
         renderTable();
         initializeColumnPicker();
 
@@ -5433,6 +5641,68 @@ ${letters}
                 if (tab.getAttribute('onclick').includes(tabName)) {
                     tab.classList.add('active');
                 }
+            });
+        }
+
+        function setupModalTabNavigation() {
+            const form = document.getElementById('claimModalForm');
+            if (!form) return;
+
+            const tabNavigationSteps = [
+                { selector: '[name="relation"]', nextTab: 'admission', nextField: '[name="ipdNo"]' },
+                { selector: '[name="status"]', nextTab: 'insurance', nextField: '[name="insuranceLimit"]' },
+                { selector: '[name="insuranceAddress"]', nextTab: 'financial', nextField: '[name="billInvoiceNo"]' },
+                { selector: '[name="utr"]', nextTab: 'bankcourier', nextField: '[name="bankName"]' },
+                { selector: '[name="courierDate"]', nextTab: 'notes', nextField: '[name="remark"]' }
+            ];
+
+            tabNavigationSteps.forEach(({ selector, nextTab, nextField }) => {
+                const field = form.querySelector(selector);
+                if (!field) return;
+
+                field.addEventListener('keydown', function (event) {
+                    if (event.key !== 'Tab' || event.shiftKey) return;
+
+                    const targetField = form.querySelector(nextField);
+                    if (!targetField) return;
+
+                    event.preventDefault();
+                    switchTab(nextTab);
+                    setTimeout(() => {
+                        targetField.focus();
+                    }, 0);
+                });
+            });
+        }
+
+        function setupModalTabNavigation() {
+            const form = document.getElementById('claimModalForm');
+            if (!form) return;
+
+            const tabNavigationSteps = [
+                { selector: '[name="relation"]', nextTab: 'admission', nextField: '[name="ipdNo"]' },
+                { selector: '[name="status"]', nextTab: 'insurance', nextField: '[name="insuranceLimit"]' },
+                { selector: '[name="insuranceAddress"]', nextTab: 'financial', nextField: '[name="billInvoiceNo"]' },
+                { selector: '[name="utr"]', nextTab: 'bankcourier', nextField: '[name="bankName"]' },
+                { selector: '[name="courierDate"]', nextTab: 'notes', nextField: '[name="remark"]' }
+            ];
+
+            tabNavigationSteps.forEach(({ selector, nextTab, nextField }) => {
+                const field = form.querySelector(selector);
+                if (!field) return;
+
+                field.addEventListener('keydown', function (event) {
+                    if (event.key !== 'Tab' || event.shiftKey) return;
+
+                    const targetField = form.querySelector(nextField);
+                    if (!targetField) return;
+
+                    event.preventDefault();
+                    switchTab(nextTab);
+                    setTimeout(() => {
+                        targetField.focus();
+                    }, 0);
+                });
             });
         }
 
