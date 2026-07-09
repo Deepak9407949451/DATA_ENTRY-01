@@ -1542,35 +1542,192 @@
             </div>
             
             <div class="collapsible-content form-section" id="invoiceSection" style="display: none;">
-                <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
-                    <button class="btn-primary" onclick="addInvoiceRow()">+ Add Row</button>
-                    <button class="btn-secondary" onclick="removeInvoiceRow()">- Remove Row</button>
-                </div>
-                <div class="table-wrapper">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>S.No</th>
-                                <th>GST %</th>
-                                <th>MRP</th>
-                                <th>Qty</th>
-                                <th>Rate</th>
-                                <th>Amount</th>
-                            </tr>
-                        </thead>
-                        <tbody id="invoiceRows"></tbody>
-                    </table>
-                </div>
-                <div style="margin-top: 20px; display: grid; gap: 8px; max-width: 320px;">
-                    <div>CGST: <span id="cgst">0.00</span></div>
-                    <div>SGST: <span id="sgst">0.00</span></div>
-                    <div>Total GST: <span id="totalGst">0.00</span></div>
-                    <div>Invoice Amount: <span id="invoiceAmountSum">0.00</span></div>
-                    <div>GST Amount: <span id="invoiceGstSum">0.00</span></div>
-                    <div>Grand Total: <span id="invoiceGrandTotalSum">0.00</span></div>
-                    <div style="font-weight: 700; font-size: 24px; color: #667eea; margin-top: 8px;" id="totalAmount">0.00</div>
-                    <div>GST in Words: <span id="gstAmountWords">Zero Rupees</span></div>
-                    <div>Amount in Words: <span id="amountWords">Zero Rupees</span></div>
+                <style>
+                    .invoice-calculator-wrap {
+                        width: 100%;
+                        max-height: 70vh;
+                        overflow: auto;
+                        padding-right: 4px;
+                    }
+                    .invoice-container {
+                        max-width: 100%;
+                        margin: 0;
+                        background-color: #fff;
+                        padding: 16px;
+                        border-radius: 6px;
+                        box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+                    }
+                    .invoice-container h2 {
+                        margin-top: 0;
+                        color: #222;
+                        border-bottom: 2px solid #eaeaea;
+                        padding-bottom: 10px;
+                        font-size: 22px;
+                    }
+                    .btn-panel {
+                        margin-bottom: 12px;
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 8px;
+                    }
+                    .btn {
+                        padding: 8px 14px;
+                        font-size: 13px;
+                        font-weight: bold;
+                        border: 1px solid transparent;
+                        border-radius: 4px;
+                        cursor: pointer;
+                        margin-right: 0;
+                        transition: background 0.2s ease;
+                    }
+                    .btn-add {
+                        background-color: #28a745;
+                        color: white;
+                    }
+                    .btn-add:hover { background-color: #218838; }
+                    .btn-del {
+                        background-color: #dc3545;
+                        color: white;
+                    }
+                    .btn-del:hover { background-color: #c82333; }
+                    .invoice-table {
+                        width: 100%;
+                        min-width: 760px;
+                        border-collapse: collapse;
+                        border: 2px solid #34495e;
+                        font-size: 12px;
+                        table-layout: auto;
+                    }
+                    .invoice-table th, .invoice-table td {
+                        border: 1px solid #7f8c8d;
+                        padding: 8px 6px;
+                        text-align: center;
+                        overflow: hidden;
+                        text-overflow: ellipsis;
+                        white-space: nowrap;
+                        vertical-align: middle;
+                    }
+                    .invoice-table th {
+                        border-bottom: 2px solid #34495e;
+                    }
+                    .invoice-table th {
+                        background-color: #f8f9fa;
+                        color: #2c3e50;
+                        font-weight: bold;
+                    }
+                    .invoice-calculator-wrap input[type="number"] {
+                        width: 100%;
+                        border: 1px solid transparent;
+                        text-align: center;
+                        font-size: 13px;
+                        background: transparent;
+                        padding: 4px;
+                        box-sizing: border-box;
+                    }
+                    .invoice-calculator-wrap input[type="number"]:hover {
+                        border: 1px solid #ccc;
+                        background: #fff;
+                    }
+                    .invoice-calculator-wrap input[type="number"]:focus {
+                        outline: 1px solid #007bff;
+                        background: #fff;
+                    }
+                    .text-left { text-align: left; }
+                    .text-right { text-align: right; }
+                    .text-center { text-align: center; }
+                    .bg-light { background-color: #fcfcfc; }
+                    .bg-calculated { background-color: #f1f2f6; font-weight: 500; }
+                    .total-row td { font-weight: bold; }
+                    .grand-total-label {
+                        font-size: 14px;
+                        vertical-align: middle;
+                        background-color: #f8f9fa;
+                    }
+                    .grand-total-box {
+                        border: 2px solid #000 !important;
+                        background-color: #fff9e6;
+                        font-size: 16px;
+                        color: #b33939;
+                    }
+                    .words-section {
+                        padding: 12px !important;
+                        line-height: 1.6;
+                        white-space: normal !important;
+                        background-color: #fafafa;
+                    }
+                    .words-section div {
+                        margin-bottom: 6px;
+                    }
+                    .words-section div:last-child {
+                        margin-bottom: 0;
+                    }
+                    @media (max-width: 768px) {
+                        .invoice-container {
+                            padding: 12px;
+                        }
+                        .invoice-table {
+                            min-width: 680px;
+                            font-size: 11px;
+                        }
+                    }
+                </style>
+                <div class="invoice-calculator-wrap">
+                    <div class="invoice-container">
+                        <h2>Invoice Calculator</h2>
+                        <div class="btn-panel">
+                            <button class="btn btn-add" onclick="addInvoiceRow()">+ Add Item Row</button>
+                            <button class="btn btn-del" onclick="removeInvoiceRow()">- Remove Last Row</button>
+                        </div>
+                        <table class="invoice-table">
+                            <thead>
+                                <tr>
+                                    <th style="width: 8%; min-width: 70px;">Sl No.</th>
+                                    <th style="width: 14%; min-width: 110px;">GST Rate (%)</th>
+                                    <th style="width: 16%; min-width: 120px;">MRP/Marginal</th>
+                                    <th style="width: 12%; min-width: 90px;">Quantity</th>
+                                    <th style="width: 18%; min-width: 140px;">Rate (Excl. GST)</th>
+                                    <th style="width: 16%; min-width: 110px;">Amount</th>
+                                    <th style="width: 16%; min-width: 100px;">GST</th>
+                                </tr>
+                            </thead>
+                            <tbody id="invoice-rows"></tbody>
+                            <tfoot>
+                                <tr class="total-row">
+                                    <td colspan="3" class="text-left">CGST</td>
+                                    <td colspan="2"></td>
+                                    <td id="cgst-val" class="text-right bg-light">0.00</td>
+                                    <td class="bg-light"></td>
+                                </tr>
+                                <tr class="total-row">
+                                    <td colspan="3" class="text-left">SGST</td>
+                                    <td colspan="2"></td>
+                                    <td id="sgst-val" class="text-right bg-light">0.00</td>
+                                    <td class="bg-light"></td>
+                                </tr>
+                                <tr class="total-row bg-light">
+                                    <td colspan="3" class="text-left">Total</td>
+                                    <td id="total-qty" class="text-center">0</td>
+                                    <td></td>
+                                    <td id="total-amount" class="text-right">0.00</td>
+                                    <td id="total-gst" class="text-right">0.00</td>
+                                </tr>
+                                <tr class="total-row">
+                                    <td colspan="5" class="text-right grand-total-label">TOTAL AMOUNT (Incl. GST):</td>
+                                    <td colspan="2" id="grand-total-box" class="text-right grand-total-box">0.00</td>
+                                </tr>
+                                <tr class="total-row">
+                                    <td colspan="7" class="text-left words-section">
+                                        <div><strong>Amount Chargeable (in words):</strong> <span id="words-amount" style="color: #2c3e50;">Zero Rupees Only</span></div>
+                                        <div><strong>Total GST Amount (in words):</strong> <span id="words-gst" style="color: #555;">Zero Rupees Only</span></div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="4" class="text-left" style="color: #7f8c8d; font-style: italic;">E. & O.E.</td>
+                                    <td colspan="3"></td>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
                 </div>
             </div>
             
@@ -2443,146 +2600,133 @@
             console.log('Auto-sync started - will sync every 10 minutes');
         }
 
-        let invoiceRowData = [
-            { gst: 5, mrp: 0.00, qty: 1 },
-            { gst: 5, mrp: 0.00, qty: 1 },
-            { gst: 5, mrp: 0.00, qty: 1 },
-            { gst: 5, mrp: 0.00, qty: 1 },
-            { gst: 5, mrp: 0.00, qty: 1 },
-            { gst: 5, mrp: 0.00, qty: 1 }
-        ];
+        const tbody = document.getElementById('invoice-rows');
 
-        function renderInvoiceRows() {
-            const tbody = document.getElementById('invoiceRows');
-            if (!tbody) return;
-            tbody.innerHTML = '';
-            invoiceRowData.forEach((row, idx) => {
-                tbody.innerHTML += `
-                <tr class="item-row">
-                    <td>${idx + 1}</td>
-                    <td><input type="number" class="gst-input" value="${row.gst}" onchange="updateInvoiceRow(${idx}, 'gst', this.value)"></td>
-                    <td><input type="number" class="mrp-input" value="${row.mrp}" step="0.01" onchange="updateInvoiceRow(${idx}, 'mrp', this.value)"></td>
-                    <td><input type="number" class="qty-input" value="${row.qty}" onchange="updateInvoiceRow(${idx}, 'qty', this.value)"></td>
-                    <td class="rate-cell">0.00</td>
-                    <td class="right amount-cell">0.00</td>
-                </tr>`;
+        addRow();
+
+        function addRow() {
+            const currentRows = tbody ? tbody.querySelectorAll('tr').length : 0;
+            const nextIndex = currentRows + 1;
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td class="row-sl-no">${nextIndex}</td>
+                <td><input type="number" class="gst-rate" value="5" step="0.01" oninput="calculateRow(this)"></td>
+                <td><input type="number" class="mrp" value="0" step="0.01" oninput="calculateRow(this)"></td>
+                <td><input type="number" class="qty" value="0" step="1" oninput="calculateRow(this)"></td>
+                <td class="rate bg-calculated text-center">0.00</td>
+                <td class="amount bg-calculated text-center">0.00</td>
+                <td class="gst bg-calculated text-center">0.00</td>
+            `;
+            if (tbody) {
+                tbody.appendChild(row);
+            }
+            calculateTotals();
+        }
+
+        function deleteLastRow() {
+            const rows = tbody ? tbody.querySelectorAll('tr') : [];
+            if (rows.length > 1) {
+                tbody.removeChild(rows[rows.length - 1]);
+                calculateTotals();
+            } else {
+                alert("At least one transactional row tracking baseline must remain open.");
+            }
+        }
+
+        function updateSerialNumbers() {
+            document.querySelectorAll('.row-sl-no').forEach((cell, index) => {
+                cell.innerText = index + 1;
             });
-            invoiceCalculate();
+        }
+
+        function calculateRow(input) {
+            const row = input.closest('tr');
+            const gstRate = parseFloat(row.querySelector('.gst-rate').value) || 0;
+            const mrp = parseFloat(row.querySelector('.mrp').value) || 0;
+            const qty = parseFloat(row.querySelector('.qty').value) || 0;
+
+            const gstComponent = (mrp * gstRate) / (100 + gstRate);
+            const roundedGstComponent = Math.round(gstComponent * 100) / 100;
+            const rateBeforeTax = mrp - roundedGstComponent;
+            const finalAmount = qty * rateBeforeTax;
+            const finalGst = qty * roundedGstComponent;
+
+            row.querySelector('.rate').innerText = rateBeforeTax.toFixed(2);
+            row.querySelector('.amount').innerText = finalAmount.toFixed(2);
+            row.querySelector('.gst').innerText = finalGst.toFixed(2);
+            calculateTotals();
+        }
+
+        function calculateTotals() {
+            updateSerialNumbers();
+            let totalQty = 0;
+            let totalAmount = 0;
+            let totalGst = 0;
+
+            document.querySelectorAll('#invoice-rows tr').forEach(row => {
+                totalQty += parseFloat(row.querySelector('.qty').value) || 0;
+                totalAmount += parseFloat(row.querySelector('.amount').innerText) || 0;
+                totalGst += parseFloat(row.querySelector('.gst').innerText) || 0;
+            });
+
+            const splitGst = totalGst / 2;
+            const grandTotal = totalAmount + totalGst;
+
+            document.getElementById('total-qty').innerText = totalQty;
+            document.getElementById('total-amount').innerText = totalAmount.toFixed(2);
+            document.getElementById('total-gst').innerText = totalGst.toFixed(2);
+            document.getElementById('cgst-val').innerText = splitGst.toFixed(2);
+            document.getElementById('sgst-val').innerText = splitGst.toFixed(2);
+            document.getElementById('grand-total-box').innerText = grandTotal.toFixed(2);
+            document.getElementById('words-amount').innerText = numberToWords(Math.round(grandTotal)) + " Rupees Only";
+            document.getElementById('words-gst').innerText = numberToWords(Math.round(totalGst)) + " Rupees Only";
+        }
+
+        function numberToWords(num) {
+            if (num === 0) return 'Zero';
+            const a = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
+            const b = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
+            const g = ['', 'Thousand', 'Lakh', 'Crore'];
+            let words = '';
+            function convertLessThanThousand(n) {
+                let str = '';
+                if (n >= 100) {
+                    str += a[Math.floor(n / 100)] + ' Hundred ';
+                    n %= 100;
+                }
+                if (n >= 20) {
+                    str += b[Math.floor(n / 10)] + ' ';
+                    n %= 10;
+                }
+                if (n > 0) {
+                    str += a[n] + ' ';
+                }
+                return str.trim();
+            }
+            let factor = 10000000;
+            let idx = 3;
+            while (idx > 0) {
+                const amount = Math.floor(num / factor);
+                if (amount > 0) {
+                    words += convertLessThanThousand(amount) + ' ' + g[idx] + ' ';
+                    num %= factor;
+                }
+                factor /= (idx === 1 ? 10 : 100);
+                idx--;
+            }
+            if (num > 0) {
+                words += convertLessThanThousand(num) + ' ';
+            }
+            return words.trim();
         }
 
         function addInvoiceRow() {
-            invoiceRowData.push({ gst: 5, mrp: 0.00, qty: 1 });
-            renderInvoiceRows();
+            addRow();
         }
 
         function removeInvoiceRow() {
-            if (invoiceRowData.length > 1) {
-                invoiceRowData.pop();
-                renderInvoiceRows();
-            }
-        }
-
-        function updateInvoiceRow(idx, field, value) {
-            invoiceRowData[idx][field] = parseFloat(value) || 0;
-            renderInvoiceRows();
-        }
-
-        function invoiceCalculate() {
-            const rows = document.querySelectorAll('.item-row');
-            let totalAmount = 0;
-            let totalGstAmount = 0;
-
-            rows.forEach((row, i) => {
-                const gst = parseFloat(invoiceRowData[i].gst) || 0;
-                const mrp = parseFloat(invoiceRowData[i].mrp) || 0;
-                const qty = parseFloat(invoiceRowData[i].qty) || 0;
-                const gstAmountPerUnit = Math.round((mrp * gst / (100 + gst)) * 100) / 100;
-                const rate = mrp - gstAmountPerUnit;
-                const amount = qty * rate;
-                const gstTotal = qty * gstAmountPerUnit;
-
-                row.querySelector('.rate-cell').textContent = rate.toFixed(2);
-                row.querySelector('.amount-cell').textContent = amount.toFixed(2);
-
-                totalAmount += amount;
-                totalGstAmount += gstTotal;
-            });
-
-            const cgst = totalGstAmount / 2;
-            const sgst = totalGstAmount / 2;
-            const totalGst = totalGstAmount;
-            const grandTotal = totalAmount + totalGstAmount;
-            const grandTotalFixed = parseFloat(grandTotal.toFixed(2));
-            const totalGstFixed = parseFloat(totalGst.toFixed(2));
-
-            document.getElementById('cgst').textContent = cgst.toFixed(2);
-            document.getElementById('sgst').textContent = sgst.toFixed(2);
-            document.getElementById('totalGst').textContent = totalGstFixed.toFixed(2);
-            document.getElementById('invoiceAmountSum').textContent = totalAmount.toFixed(2);
-            document.getElementById('invoiceGstSum').textContent = totalGstFixed.toFixed(2);
-            document.getElementById('invoiceGrandTotalSum').textContent = grandTotalFixed.toFixed(2);
-
-            const totalAmountElem = document.getElementById('totalAmount');
-            totalAmountElem.textContent = grandTotalFixed.toFixed(2);
-            let fontSize = 18;
-            if (grandTotalFixed > 10000) fontSize = 22;
-            if (grandTotalFixed > 50000) fontSize = 28;
-            if (grandTotalFixed > 100000) fontSize = 36;
-            if (grandTotalFixed > 500000) fontSize = 44;
-            if (grandTotalFixed > 1000000) fontSize = 54;
-            totalAmountElem.style.fontSize = fontSize + 'px';
-
-            document.getElementById('gstAmountWords').textContent = invoiceNumberToWords(totalGstFixed) + ' Only';
-            document.getElementById('amountWords').textContent = invoiceNumberToWords(grandTotalFixed) + ' Only';
-        }
-
-        function invoiceNumberToWords(amount) {
-            const units = ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine'];
-            const teens = ['Ten', 'Eleven', 'Twelve', 'Thirteen', 'Fourteen', 'Fifteen', 'Sixteen', 'Seventeen', 'Eighteen', 'Nineteen'];
-            const tens = ['', '', 'Twenty', 'Thirty', 'Forty', 'Fifty', 'Sixty', 'Seventy', 'Eighty', 'Ninety'];
-            const scales = ['', 'Thousand', 'Lakh', 'Crore'];
-
-            function twoDigitWord(n) {
-                if (n < 10) return units[n];
-                if (n < 20) return teens[n - 10];
-                const ten = Math.floor(n / 10);
-                const unit = n % 10;
-                return tens[ten] + (unit ? ' ' + units[unit] : '');
-            }
-
-            function threeDigitWord(n) {
-                const hundred = Math.floor(n / 100);
-                const remainder = n % 100;
-                return (hundred ? units[hundred] + ' Hundred' + (remainder ? ' ' : '') : '') + (remainder ? twoDigitWord(remainder) : '');
-            }
-
-            if (amount === 0) return 'Zero Rupees';
-
-            const [integerPart, decimalPart] = amount.toFixed(2).split('.');
-            let n = parseInt(integerPart, 10);
-            const words = [];
-
-            const groups = [];
-            groups.push(n % 1000);
-            n = Math.floor(n / 1000);
-            groups.push(n % 100);
-            n = Math.floor(n / 100);
-            groups.push(n % 100);
-            n = Math.floor(n / 100);
-            groups.push(n);
-
-            for (let i = 0; i < groups.length; i++) {
-                const groupValue = groups[i];
-                if (groupValue) {
-                    const scale = scales[i];
-                    const groupWords = i === 0 ? threeDigitWord(groupValue) : twoDigitWord(groupValue);
-                    words.unshift(groupWords + (scale ? ' ' + scale : ''));
-                }
-            }
-
-            const paise = parseInt(decimalPart, 10);
-            const paiseWords = paise ? ' and ' + twoDigitWord(paise) + ' Paise' : '';
-            return words.join(' ') + ' Rupees' + paiseWords;
+            deleteLastRow();
         }
 
         function toggleInvoiceSection() {
