@@ -2542,7 +2542,7 @@
         const PAGE_SIZES = [10, 25, 50, 100];
         let currentPage = 1;
         let pageSize = 25;
-        let currentClaimsView = 'table';
+        let currentClaimsView = 'grid';
         let editingIndex = -1;
         let currentDetailsIndex = -1;
         let selectedIndices = new Set();
@@ -4599,10 +4599,13 @@ ${letters}
 
         function getStatusColor(status) {
             const colors = {
-                'Pending': '#ffc107',
-                'Approved': '#28a745',
-                'Rejected': '#dc3545',
-                'Settled': '#17a2b8'
+                'Admitted': '#a8f018',
+                'Initial Approved': '#2151ed',
+                'Discharge': '#229bf0',
+                'Discharge Approved': '#45f54d',
+                'Denial': '#e8392a',
+                'Pending': '#b811f0',
+                'Settled': '#089c4e'
             };
             return colors[status] || '#6c757d';
         }
