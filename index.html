@@ -4394,10 +4394,37 @@ ${letters}
             renderTable();
         }
 
+        function getFilteredClaims(baseClaims = claims) {
+            let filtered = Array.isArray(baseClaims) ? [...baseClaims] : [];
+            const searchBox = document.getElementById('searchBox');
+            const searchValue = searchBox ? searchBox.value.trim() : '';
+
+            if (dateFilterFrom && dateFilterTo) {
+                filtered = filtered.filter(claim => {
+                    if (!claim.doa) return false;
+                    const claimDate = new Date(claim.doa);
+                    return claimDate >= dateFilterFrom && claimDate <= dateFilterTo;
+                });
+            }
+
+            if (currentFilter) {
+                filtered = filtered.filter(claim => claim.status === currentFilter);
+            }
+
+            if (searchValue) {
+                const searchTerm = searchValue.toLowerCase();
+                filtered = filtered.filter(claim => {
+                    return Object.values(claim).some(value => String(value).toLowerCase().includes(searchTerm));
+                });
+            }
+
+            return filtered;
+        }
+
         function renderTable(filteredClaims = null) {
             const tableBody = document.getElementById('tableBody');
             const gridView = document.getElementById('claimsGridView');
-            const claimsToRender = filteredClaims || claims;
+            const claimsToRender = filteredClaims === undefined || filteredClaims === null ? getFilteredClaims() : filteredClaims;
             
             const totalItems = claimsToRender.length;
             const totalPages = Math.max(1, Math.ceil(totalItems / pageSize));
